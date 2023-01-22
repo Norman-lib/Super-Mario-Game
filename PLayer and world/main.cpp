@@ -4,8 +4,6 @@
 #include "flag.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-
 #include "Ennemy.h"
 
 
@@ -35,6 +33,9 @@ vector<float> platform2Dim = { 5.0,0.5 };
 vector<float> playerPos = {-1,0};
 vector<float> playerDim = {0.5,0.5};
 
+platform* plat1 = new platform(platformPos, platformDim);
+platform* plat2 = new platform(platform2Pos, platform2Dim);
+
 
 int score = 0;
 
@@ -52,11 +53,13 @@ float radius = 0.5;
 vector<vector<float>> goldPos = { {-5,0},{2, 1} };
 
 float enemyWidth = 0.5f;
-vector<vector<float>> enemyPos = { {-5, 0} , {3, 3} };
-vector<vector<float>> enemiesSpeed = { {moveForce, 0}, {moveForce,0} };
+vector<vector<float>> enemyPos = {   {3, 3} };
+vector<vector<float>> enemiesSpeed = { {moveForce, 0} };
 
 
-Enemy* enemy = new Enemy(enemyPos[0], {enemyWidth, enemyWidth});
+Enemy* enemy = new Enemy({ -5, 0 }, {enemyWidth, enemyWidth});
+
+vector <Enemy*> enemies = { enemy };
 
 void drawGold(vector<vector<float>> g) {
     
@@ -99,7 +102,7 @@ void loadTexture(const char* filename) {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Copy the image data to the texture object
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
     glBindTexture(GL_TEXTURE_2D, 0);
     // Free the image data
     stbi_image_free(imageData);
@@ -434,9 +437,16 @@ void drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
 void timer(int value) {
     currentTime = glutGet(GLUT_ELAPSED_TIME);
     deltaTime = (currentTime - lastTime) / 1000.0f;
+    
+    
     lastTime = currentTime;
     updatePlayerPosition();
     updateEnemiesPosition();
+    for (int i = 0; i < enemies.size(); i++) {
+        enemies[i]->setDeltaTime(deltaTime);
+        enemies[i]->Move(plat1);
+    }
+   
     glutPostRedisplay();
     glutTimerFunc(1000 / 60, timer, 0);
 }
@@ -463,11 +473,15 @@ void displayScore() {
     }
 }
 
+
+vector <platform*> platforms = { plat1, plat2 };
+
 void display()
 {
     
     updatePlayerPosition();
     updateEnemiesPosition();
+    enemy->Move(plat1);
 
    
 
@@ -489,7 +503,9 @@ void display()
     glVertex2f(-18.0f, -18.0f);
     glEnd();
     glColor3f(0.0, 1.0, 0.0);
-    enemy->drawEnemy();
+    for (int i = 0; i < enemies.size(); i++) {
+        enemies[i]->drawEnemy();
+    }
 
     // Draw the player square
     drawPlayerWithTexture(playerPos, playerDim);
@@ -504,10 +520,11 @@ void display()
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
     //drawRectangle(platform2Pos, platform2Dim);
-    platform* plat1=new platform(platformPos, platformDim);
-    platform* plat2 = new platform(platform2Pos, platform2Dim);
-    plat1->draw();
-    plat2->draw();
+    for (int i = 0; i < platforms.size(); i++) {
+        platforms[i]->draw();
+    }
+   
+ 
     
     //draw flag
     vector<float> flagPos = { 2,0 };
@@ -583,6 +600,9 @@ int main(int argc, char** argv)
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);
     loadTexture("marioLeft.jpg");
+    for (int i = 0; i < enemies.size(); i++) {
+        enemies[i]->loadTexture();
+    }
     glutDisplayFunc(display);
 
     glutTimerFunc(1000 / 60, timer, 0);
