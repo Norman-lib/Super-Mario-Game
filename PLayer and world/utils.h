@@ -1,0 +1,9 @@
+#pragma once
+#include <gl/glew.h>
+#include <GL/freeglut.h>
+#include <vector>
+#include <string>;
+#include <iostream>
+#include <irrKlang.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
