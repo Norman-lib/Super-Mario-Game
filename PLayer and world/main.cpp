@@ -59,8 +59,15 @@ vector<float> playerPos = {-1,0};
 vector<float> playerDim = {0.5,0.5};
 
 platform* plat1 = new platform(platformPos, platformDim);
-platform* plat2 = new platform(platform2Pos, platform2Dim);
+platform* plat2 = new platform(platform2Pos, platform2Dim); 
+platform* plat3 = new platform(platform3Pos, platform3Dim);
+platform* plat4 = new platform(platform4Pos, platform4Dim);
+platform* plat5 = new platform(platform5Pos, platform5Dim);
 
+Gold* gold1 = new Gold();
+Gold* gold2 = new Gold();
+Gold* gold3 = new Gold();
+Gold* gold4 = new Gold();
 
 int score = 0;
 
@@ -465,7 +472,7 @@ void detectGoldCols(vector<float> playerPos, vector<float> playerDim, int score,
 
             Golds.erase(find(Golds.begin(), Golds.end(), gold)); 
             score += 1; //SetScore() du player
-            coinSound->play2D(coinSoundPath, false);
+            //coinSound->play2D(coinSoundPath, false);
 
             cout << "your score : " << score << endl;
             return;
@@ -485,19 +492,17 @@ void displayScore() {
 
 
 
-platform* plat3 = new platform(platform3Pos, platform3Dim);
-platform* plat4 = new platform(platform4Pos, platform4Dim);
-platform* plat5 = new platform(platform5Pos, platform5Dim);
+
 vector<platform*> platformList;
 
 void display()
 {
-    
+
     updatePlayerPosition();
     updateEnemiesPosition();
     enemy->Move(plat1);
 
-   
+
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -529,10 +534,10 @@ void display()
     glColor3f(1.0, 0.843137, 0.0);
 
     for (int i = 0; i < Golds.size(); i++) {
-        Golds[i]->drawGold(Golds[i]->getPosition()); 
+        Golds[i]->drawGold(Golds[i]->getPosition());
         detectGoldCols(playerPos, playerDim, score, Golds[i]);
     }
- 
+
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
     //drawRectangle(platform2Pos, platform2Dim);
@@ -540,11 +545,11 @@ void display()
     for (int i = 0; i < platformList.size(); i++) {
         platformList[i]->draw();
     }
-   
- 
 
-   
-   
+
+
+
+
 
     /*plat1->drawWithTexture("platform.png");
     plat2->drawWithTexture("platform.png");
@@ -552,7 +557,7 @@ void display()
     plat4->drawWithTexture("platform.png");
     plat5->drawWithTexture("platform.png");*/
 
-    
+
     //draw flag
 
     flag* flag1 = new flag(flagPos, flagDim);
@@ -570,20 +575,22 @@ void display()
 
 
     glutSwapBuffers();
-{
-    switch (key)  {
-    case 'q':
-       left1 = true;
-        break;
-    case 'd':
-        right1 = true;
-        break;
-    case 'z':
-        jump = true;
-        break;
-    }
-    glutPostRedisplay();
 }
+    void keyboard(unsigned char key, int x, int y)
+    {
+        switch (key) {
+        case 'q':
+            left1 = true;
+            break;
+        case 'd':
+            right1 = true;
+            break;
+        case 'z':
+            jump = true;
+            break;
+        }
+        glutPostRedisplay();
+    }
 
 void keyboardUp(unsigned char key, int x, int y) {
     switch (key) {
@@ -621,25 +628,18 @@ int main(int argc, char** argv)
     platformList.push_back(plat5);
 
 
-    Gold* gold1 = new Gold();
     gold1->setPosition({ -5,0 });
-    gold1->loadTexture("coin.jpg");
-    Gold* gold2 = new Gold();
     gold2->setPosition({ 2, 1 });
-    gold2->loadTexture("coin.jpg");
-    Gold* gold3= new Gold();
     gold3->setPosition({ -7, 0 });
-    gold3->loadTexture("coin.jpg");
-    Gold* gold4 = new Gold();
     gold4->setPosition({ 4, 1 });
-    gold4->loadTexture("coin.jpg");
+   
 
     Golds.push_back(gold1); 
     Golds.push_back(gold2); 
     Golds.push_back(gold3);
     Golds.push_back(gold4);
 
-
+    glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800, 800);
     glutCreateWindow("Player and World");
@@ -647,6 +647,9 @@ int main(int argc, char** argv)
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);
     loadTexture("marioLeft.jpg");
+    for (int i = 0; i < Golds.size(); i++) {
+        Golds[i]->loadTexture("coin.jpg");
+    }
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->loadTexture();
     }
