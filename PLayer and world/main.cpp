@@ -24,12 +24,24 @@ ISoundEngine* coinSound = createIrrKlangDevice();
 GLfloat playerX = 0.0f;
 vector<float> gravity = { 0, -0.5 };
 
+//platform
 vector<float> platformPos = { 0,-1 };
-vector<float> platformDim = { 5.0,0.5 };
+vector<float> platformDim = { 10.0,0.5 };
+vector<float> platform2Pos = { 5,2.0 };
+vector<float> platform2Dim = { 5.0,0.5 };
+vector<float> platform3Pos = { 0.0,5.0 };
+vector<float> platform3Dim = { 3.0,0.5 };
+vector<float> platform4Pos = { -3.0,8.0 };
+vector<float> platform4Dim = { 7.0,0.5 };
+vector<float> platform5Pos = { 9.0,6.0 };
+vector<float> platform5Dim = { 3.0,0.5 };
+
+//flag
+vector<float> flagPos = { -9.5,9.0 };
+vector<float> flagDim = { 0.5,0.5 };
+
 vector<vector<vector<float>>*> obstacles;
 
-vector<float> platform2Pos = { 5,2 };
-vector<float> platform2Dim = { 5.0,0.5 };
 vector<float> playerPos = {-1,0};
 vector<float> playerDim = {0.5,0.5};
 
@@ -500,12 +512,17 @@ void display()
     //drawRectangle(platform2Pos, platform2Dim);
     platform* plat1=new platform(platformPos, platformDim);
     platform* plat2 = new platform(platform2Pos, platform2Dim);
+    platform* plat3 = new platform(platform3Pos, platform3Dim);
+    platform* plat4 = new platform(platform4Pos, platform4Dim);
+    platform* plat5 = new platform(platform5Pos, platform5Dim);
     plat1->drawWithTexture("platform.png");
-    plat2->draw();
+    plat2->drawWithTexture("platform.png");
+    plat3->drawWithTexture("platform.png");
+    plat4->drawWithTexture("platform.png");
+    plat5->drawWithTexture("platform.png");
     
     //draw flag
-    vector<float> flagPos = { 2,0 };
-    vector<float> flagDim = { 0.5,0.5 };
+
     flag* flag1 = new flag(flagPos, flagDim);
     flag1->drawWithTexture("flag.png");
 
