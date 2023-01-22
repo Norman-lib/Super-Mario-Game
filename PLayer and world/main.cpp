@@ -1,8 +1,13 @@
 
 
-#include "Ennemy.h"
+#include "platform.h"
+#include "flag.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+
+#include "Ennemy.h"
+
 
 
 
@@ -22,13 +27,15 @@ vector<float> gravity = { 0, -0.5 };
 
 
 vector<float> platformPos = { 0,-1 };
-vector<float> platformDim = { 10.0,0.5 };
+vector<float> platformDim = { 5.0,0.5 };
 vector<vector<vector<float>>*> obstacles;
 
 vector<float> platform2Pos = { 5,2 };
 vector<float> platform2Dim = { 5.0,0.5 };
 vector<float> playerPos = {-1,0};
 vector<float> playerDim = {0.5,0.5};
+
+
 int score = 0;
 
 bool jump;
@@ -487,15 +494,26 @@ void display()
     // Draw the player square
     drawPlayerWithTexture(playerPos, playerDim);
 
+
+
     glColor3f(1.0, 0.843137, 0.0);
     drawGold(goldPos);
 
     detectGoldCols();
  
     glColor3f(1.0f, 1.0f, 0.0f);
-    drawRectangle(platformPos, platformDim);
-    drawRectangle(platform2Pos, platform2Dim);
-
+    //drawRectangle(platformPos, platformDim);
+    //drawRectangle(platform2Pos, platform2Dim);
+    platform* plat1=new platform(platformPos, platformDim);
+    platform* plat2 = new platform(platform2Pos, platform2Dim);
+    plat1->draw();
+    plat2->draw();
+    
+    //draw flag
+    vector<float> flagPos = { 2,0 };
+    vector<float> flagDim = { 0.5,0.5 };
+    flag* flag1 = new flag(flagPos, flagDim);
+    flag1->drawWithTexture("flag.png");
 
 
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -506,6 +524,7 @@ void display()
 
     glColor3f(1.0f, 1.0f, 1.0f);
     displayScore();
+
 
     glutSwapBuffers();
 }
