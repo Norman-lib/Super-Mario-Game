@@ -130,10 +130,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ennemy.cpp" />
+    <ClCompile Include="flag.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ennemy.h" />
+    <ClInclude Include="flag.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="utils.h" />
