@@ -507,6 +507,7 @@ void display()
     vector<float> flagPos = { 2,0 };
     vector<float> flagDim = { 0.5,0.5 };
     flag* flag1 = new flag(flagPos, flagDim);
+    flag1->drawWithTexture("flag.png");
 
 
     glColor3f(1.0f, 0.0f, 0.0f);

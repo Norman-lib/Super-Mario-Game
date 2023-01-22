@@ -14,7 +14,6 @@ public:
 	flag(vector<float> pos, vector<float> dim);
 
 	//Methods
-	void draw();
 	vector<float> getPos();
 	vector<float> getDim();
 	void drawWithTexture(const char* filename);
