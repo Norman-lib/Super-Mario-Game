@@ -131,9 +131,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mario.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Mario.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Strecture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
