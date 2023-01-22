@@ -47,7 +47,7 @@ void flag::drawWithTexture() {
 void flag::loadTexture() {
     int width, height, numComponents;
  
-    unsigned char* imageData = stbi_load("flag.png", &width, &height, &numComponents, 0);
+    unsigned char* imageData = stbi_load("flag.jpg", &width, &height, &numComponents, 0);
 
     if (imageData == NULL)
         std::cerr << "Unable to load texture: " << "flag.png" << std::endl;

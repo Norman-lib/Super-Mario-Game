@@ -70,7 +70,7 @@ public:
 	bool DetectCollisionWPlayer(vector<float> targetPos, vector<float> targetDims);
 
 	Struct::CollisionSide checkEnemyCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim);
-	void detectGoldCols(vector<vector<float>> goldPos, float radius);
+	bool detectGoldCols(vector<float> goldPos, float radius);
 	int detectEnnemyCols(vector<float> EnnemyPos, vector<float> dim);
 	void loadTexture(int a, const char* fileName);
 };

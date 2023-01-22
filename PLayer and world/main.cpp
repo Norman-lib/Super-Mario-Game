@@ -90,7 +90,7 @@ vector<vector<float>> enemyPos = {   {3, 3} };
 vector<vector<float>> enemiesSpeed = {{moveForce, 0} };
 
 
-Enemy* enemy = new Enemy({ -5, 0 }, { enemyWidth, enemyWidth }, plat1->getPos(), plat1->getDim());
+Enemy* enemy = new Enemy({ 5, 0 }, { enemyWidth, enemyWidth }, plat1->getPos(), plat1->getDim());
 Enemy* enemy1 = new Enemy({ 5, 3 }, { enemyWidth, enemyWidth }, plat2->getPos(), plat2->getDim());
 
 vector <Enemy*> enemies = { enemy, enemy1 };
@@ -541,13 +541,15 @@ void display()
 
 
     glColor3f(1.0, 0.843137, 0.0);
-
     for (int i = 0; i < Golds.size(); i++) {
         Golds[i]->drawGold(Golds[i]->getPosition());
-        detectGoldCols(playerPos, playerDim, score, Golds[i]);
+        if (mario.detectGoldCols(Golds[i]->getPosition(), radius)) {
+            Golds.erase(Golds.begin() + i);
+         }
+        
     }
 
-    //mario.detectGoldCols(goldPos,radius);
+   
     for (int i = 0; i < enemies.size(); i++) {
         colValue = mario.detectEnnemyCols(enemies[i]->getPosition(), enemies[i]->getDimentions());
         if (colValue == 1) {

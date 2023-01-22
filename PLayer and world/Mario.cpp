@@ -220,17 +220,18 @@ Struct::CollisionSide Mario::checkEnemyCollision(vector<float> playerPos, vector
     return Struct::None;
 }
 
-void Mario::detectGoldCols(vector<vector<float>> goldPos,float radius) {
-    for (int i = 0; i < goldPos.size(); i++) {
-        Struct::Collision collision = checkCollision( Position,Dimension,goldPos[i], { radius, radius });
+bool Mario::detectGoldCols(vector<float> goldPos,float radius) {
+    
+        Struct::Collision collision = checkCollision( Position,Dimension,goldPos, { radius, radius });
         if (collision.side != Struct::None) {
-            goldPos.erase(goldPos.begin() + i);
+            
             score += 1;
             //coinSound->play2D(coinSoundPath, false);
             cout << "your score : " << score << endl;
-            return;
+            return true;
         }
-    }
+        return false;
+    
 }
 
 
