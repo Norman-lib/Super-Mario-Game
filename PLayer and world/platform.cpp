@@ -1,28 +1,64 @@
 #include "platform.h"
 
 
-platform::platform(vector<float> pos, vector<float> dim) {
-    this->pos = pos;
-    this->dim = dim;
+platform::platform(vector<float> posi, vector<float> dime) {
+    pos = posi;
+    dim = dime;
 }
 
 void platform::draw() {
+    glEnable(GL_TEXTURE_2D);
+
+    // Bind the texture
+    glBindTexture(GL_TEXTURE_2D, texture);
     glBegin(GL_QUADS);
-    glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
-    glVertex2f(pos[0] - dim[0], pos[1] + dim[1]);
+    glTexCoord2f(0.0f, 0.0f);
     glVertex2f(pos[0] + dim[0], pos[1] + dim[1]);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex2f(pos[0] - dim[0], pos[1] + dim[1]);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
+    glTexCoord2f(0.0f, 1.0f);
     glVertex2f(pos[0] + dim[0], pos[1] - dim[1]);
     glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void platform::drawWithTexture(const char* filename) {
 
+    
+
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+    // Enable texture coordinates
+   
+
+    // Draw the shape
+    glBegin(GL_QUADS);
+    // Set the texture coordinates for each vertex
+   
+    glEnd();
+
+    // Unbind the texture
+   
+
+}
+
+vector<float> platform::getDim() {
+    return dim;
+}
+
+vector<float> platform::getPos() {
+    return pos;
+}
+
+void platform::loadTexture() {
     int width, height, numComponents;
-    GLuint textureMarioLeft;
-    unsigned char* imageData = stbi_load(filename, &width, &height, &numComponents, 0);
+   
+    unsigned char* imageData = stbi_load("platform.png", &width, &height, &numComponents, 0);
 
     if (imageData == NULL)
-        std::cerr << "Unable to load texture: " << filename << std::endl;
+        std::cerr << "Unable to load texture: " << "platform.png" << std::endl;
     else {
         cout << "worked" << endl;
         cout << "width :" << width << endl;
@@ -31,8 +67,8 @@ void platform::drawWithTexture(const char* filename) {
 
     }
     // Generate the texture object
-    glGenTextures(1, &textureMarioLeft);
-    glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     // Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -46,38 +82,5 @@ void platform::drawWithTexture(const char* filename) {
     glBindTexture(GL_TEXTURE_2D, 0);
     // Free the image data
     stbi_image_free(imageData);
-
-
-    glColor3f(1.0f, 1.0f, 1.0f);
-    // Enable texture coordinates
-    glEnable(GL_TEXTURE_2D);
-
-    // Bind the texture
-    glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
-
-    // Draw the shape
-    glBegin(GL_QUADS);
-    // Set the texture coordinates for each vertex
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex2f(pos[0] + dim[0], pos[1] + dim[1]);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex2f(pos[0] - dim[0], pos[1] + dim[1]);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex2f(pos[0] + dim[0], pos[1] - dim[1]);
-    glEnd();
-
-    // Unbind the texture
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-}
-
-vector<float> platform::getDim() {
-    return dim;
-}
-
-vector<float> platform::getPos() {
-    return pos;
 }
 

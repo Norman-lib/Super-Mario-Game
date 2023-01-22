@@ -8,6 +8,8 @@ using namespace std;
 class platform {
 	vector<float> pos;
 	vector<float> dim;
+	GLuint texture;
+	
 
 public:
 
@@ -19,5 +21,6 @@ public:
 	void drawWithTexture(const char* filename);
 	vector<float> getPos();
 	vector<float> getDim();
+	void loadTexture();
 
 };
