@@ -36,6 +36,7 @@ vector<float> platform4Dim = { 7.0,0.5 };
 vector<float> platform5Pos = { 9.0,6.0 };
 vector<float> platform5Dim = { 3.0,0.5 };
 
+
 //flag
 vector<float> flagPos = { -9.5,9.0 };
 vector<float> flagDim = { 0.5,0.5 };
@@ -515,6 +516,13 @@ void display()
     platform* plat3 = new platform(platform3Pos, platform3Dim);
     platform* plat4 = new platform(platform4Pos, platform4Dim);
     platform* plat5 = new platform(platform5Pos, platform5Dim);
+    vector<platform*> platformList;
+    platformList.push_back(plat1);
+    platformList.push_back(plat2);
+    platformList.push_back(plat3);
+    platformList.push_back(plat4);
+    platformList.push_back(plat5);
+
     plat1->drawWithTexture("platform.png");
     plat2->drawWithTexture("platform.png");
     plat3->drawWithTexture("platform.png");
