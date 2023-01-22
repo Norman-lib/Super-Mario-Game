@@ -12,10 +12,12 @@ private:
 	float moveForce;
 	const char * texturePath;
 	GLuint texture;
+	vector<float> platformPos;
+	vector <float> platformDim;
 
 
 public:
-	Enemy(vector<float> pos, vector<float> dim);
+	Enemy(vector<float> pos, vector<float> dim, vector<float> posP, vector<float> dimP);
 	//getters and setters
 	void setPosition(vector<float> f) { position = f; };
 	void setDimentions(vector<float> f) { dimentions = f; };
@@ -30,7 +32,7 @@ public:
 
 	//functions
 	void drawEnemy();
-	void Move(platform*);
+	void Move();
 	void loadTexture();
 
 

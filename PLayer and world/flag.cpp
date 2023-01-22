@@ -14,36 +14,9 @@ vector<float> flag::getPos() {
 }
 
 
-void flag::drawWithTexture(const char* filename) {
+void flag::drawWithTexture() {
 
-    int width, height, numComponents;
-    GLuint textureMarioLeft;
-    unsigned char* imageData = stbi_load(filename, &width, &height, &numComponents, 0);
-
-    if (imageData == NULL)
-        std::cerr << "Unable to load texture: " << filename << std::endl;
-    else {
-        cout << "worked" << endl;
-        cout << "width :" << width << endl;
-        cout << "width :" << height << endl;
-        cout << "width :" << numComponents << endl;
-
-    }
-    // Generate the texture object
-    glGenTextures(1, &textureMarioLeft);
-    glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
-
-    // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Copy the image data to the texture object
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // Free the image data
-    stbi_image_free(imageData);
+    
 
 
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -51,7 +24,7 @@ void flag::drawWithTexture(const char* filename) {
     glEnable(GL_TEXTURE_2D);
 
     // Bind the texture
-    glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     // Draw the shape
     glBegin(GL_QUADS);
@@ -69,4 +42,35 @@ void flag::drawWithTexture(const char* filename) {
     // Unbind the texture
     glBindTexture(GL_TEXTURE_2D, 0);
 
+}
+
+void flag::loadTexture() {
+    int width, height, numComponents;
+ 
+    unsigned char* imageData = stbi_load("flag.png", &width, &height, &numComponents, 0);
+
+    if (imageData == NULL)
+        std::cerr << "Unable to load texture: " << "flag.png" << std::endl;
+    else {
+        cout << "worked" << endl;
+        cout << "width :" << width << endl;
+        cout << "width :" << height << endl;
+        cout << "width :" << numComponents << endl;
+
+    }
+    // Generate the texture object
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Copy the image data to the texture object
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    // Free the image data
+    stbi_image_free(imageData);
 }

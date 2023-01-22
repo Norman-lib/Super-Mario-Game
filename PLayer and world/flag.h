@@ -7,6 +7,7 @@ using namespace std;
 class flag {
 	vector<float> pos;
 	vector<float> dim;
+	GLuint texture;
 
 public:
 
@@ -16,6 +17,7 @@ public:
 	//Methods
 	vector<float> getPos();
 	vector<float> getDim();
-	void drawWithTexture(const char* filename);
+	void drawWithTexture();
+	void loadTexture();
 
 };

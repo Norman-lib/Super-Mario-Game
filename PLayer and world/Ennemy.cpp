@@ -4,9 +4,11 @@
 
 
 
-Enemy::Enemy(vector<float> pos, vector<float> dim) {
+Enemy::Enemy(vector<float> pos, vector<float> dim, vector<float> posP, vector<float> dimP) {
     position = pos;
     dimentions = dim;
+    platformDim = dimP;
+    platformPos = posP;
     moveForce = 2.0;
     deltaTime = 0;
     speed = { moveForce,0 };
@@ -132,12 +134,12 @@ Collision1 checkCollision(vector<float> playerPos, vector<float> playerDim, vect
     return col;
 }
 
-void Enemy::Move(platform* plat) {
+void Enemy::Move() {
  
       
 
 
-        CollisionSideEnemies side2 = checkEnemyCollision1(position, dimentions, plat->getPos(), plat->getDim());
+        CollisionSideEnemies side2 = checkEnemyCollision1(position, dimentions, platformPos, platformDim);
         
 
 

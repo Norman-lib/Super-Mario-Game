@@ -11,12 +11,13 @@ void platform::draw() {
 
     // Bind the texture
     glBindTexture(GL_TEXTURE_2D, texture);
+    float ratio = dim[0] / dim[1];
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f);
     glVertex2f(pos[0] + dim[0], pos[1] + dim[1]);
-    glTexCoord2f(1.0f, 0.0f);
+    glTexCoord2f(ratio, 0.0f);
     glVertex2f(pos[0] - dim[0], pos[1] + dim[1]);
-    glTexCoord2f(1.0f, 1.0f);
+    glTexCoord2f(ratio, 1.0f);
     glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
     glTexCoord2f(0.0f, 1.0f);
     glVertex2f(pos[0] + dim[0], pos[1] - dim[1]);
@@ -36,7 +37,7 @@ vector<float> platform::getPos() {
 void platform::loadTexture() {
     int width, height, numComponents;
    
-    unsigned char* imageData = stbi_load("platform.png", &width, &height, &numComponents, 0);
+    unsigned char* imageData = stbi_load("tile.jpg", &width, &height, &numComponents, 0);
 
     if (imageData == NULL)
         std::cerr << "Unable to load texture: " << "platform.png" << std::endl;

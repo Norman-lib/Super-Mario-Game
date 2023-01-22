@@ -19,7 +19,6 @@ class Mario {
     vector<float> Dimension = { 0.5,0.5 };
 	int score=0;
 	
-	bool textureRight;
 
 public:
 	vector<float> velocity = { 0, 0 };
@@ -31,11 +30,14 @@ public:
 	float lastTime = 0.0f;
 	bool left1;
 	bool right1;
+	bool isLastPositionLeft;
+	bool gameOver;
 	//texture vars;
 	unsigned char* marioLeftData;
 	int marioWidth, marioHeight, marioNrChannels;
 	GLuint textureMarioLeft;
 	GLuint textureMarioRight;
+	GLuint textureDeadMario;
 
 
 	GLfloat playerX = 0.0f;
@@ -57,6 +59,8 @@ public:
 	void  setPosition(vector<float> pos) { Position = pos; }
 	void drawPlayerWithTexture(vector<float> pos, vector<float> dim);
 	void displayScore();
+	void setLastPosition(bool s) { isLastPositionLeft = s; };
+	bool getLastPosition() { return isLastPositionLeft; };
 
 
 	
@@ -67,5 +71,6 @@ public:
 
 	Struct::CollisionSide checkEnemyCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim);
 	void detectGoldCols(vector<vector<float>> goldPos, float radius);
-	void detectEnnemyCols(vector<vector<float>> EnnemyPos, vector<float> dim);
+	int detectEnnemyCols(vector<float> EnnemyPos, vector<float> dim);
+	void loadTexture(int a, const char* fileName);
 };

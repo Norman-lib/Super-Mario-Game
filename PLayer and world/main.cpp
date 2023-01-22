@@ -71,6 +71,10 @@ Gold* gold2 = new Gold();
 Gold* gold3 = new Gold();
 Gold* gold4 = new Gold();
 
+flag* flag1 = new flag(flagPos, flagDim);
+
+vector<platform*> platformList;
+
 int score = 0;
 
 
@@ -86,9 +90,10 @@ vector<vector<float>> enemyPos = {   {3, 3} };
 vector<vector<float>> enemiesSpeed = {{moveForce, 0} };
 
 
-Enemy* enemy = new Enemy({ -5, 0 }, {enemyWidth, enemyWidth});
+Enemy* enemy = new Enemy({ -5, 0 }, { enemyWidth, enemyWidth }, plat1->getPos(), plat1->getDim());
+Enemy* enemy1 = new Enemy({ 5, 3 }, { enemyWidth, enemyWidth }, plat2->getPos(), plat2->getDim());
 
-vector <Enemy*> enemies = { enemy };
+vector <Enemy*> enemies = { enemy, enemy1 };
 
 
 
@@ -337,12 +342,12 @@ CollisionSide checkEnemyCollision1(vector<float> playerPos, vector<float> player
 //}
 
 
-void updateEnemiesPosition() {
+void updateEnemiesPosition(vector<float> pos, vector<float> dim) {
     for (int j = 0; j < enemyPos.size(); j++) {
         enemiesSpeed[j][1] += gravity[1];
 
 
-        Struct::CollisionSide side2 = mario.checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, platform2Pos, platform2Dim);
+        Struct::CollisionSide side2 = mario.checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, pos, dim);
         Struct::CollisionSide side = mario.checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, platformPos, platformDim);
 
 
@@ -461,10 +466,10 @@ void timer(int value) {
     mario.deltaTime = deltaTime;
     mario.lastTime = currentTime;
     mario.UpdatePlayerPosition(platformPos,platformDim);
-    updateEnemiesPosition();
+   
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->setDeltaTime(deltaTime);
-        enemies[i]->Move(plat1);
+        enemies[i]->Move();
     }
    
     glutPostRedisplay();
@@ -495,14 +500,16 @@ void detectGoldCols(vector<float> playerPos, vector<float> playerDim, int score,
 
 
 
-vector<platform*> platformList;
+
+int colValue;
 
 void display()
 {
     mario.UpdatePlayerPosition(platformPos,platformDim);
     
-    updateEnemiesPosition();
-    enemy->Move(plat1);
+    for (int i = 0; i < enemies.size(); i++) {
+        enemies[i]->Move();
+    }
 
 
 
@@ -541,7 +548,17 @@ void display()
     }
 
     //mario.detectGoldCols(goldPos,radius);
-    mario.detectEnnemyCols(enemyPos, { enemyWidth,enemyWidth });
+    for (int i = 0; i < enemies.size(); i++) {
+        colValue = mario.detectEnnemyCols(enemies[i]->getPosition(), enemies[i]->getDimentions());
+        if (colValue == 1) {
+            enemies.erase(enemies.begin() + i);
+            colValue = 0;
+        }
+        else if (colValue == 2) {
+            cout << "Kill MARIO" << endl;
+        }
+    }
+    
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
     //drawRectangle(platform2Pos, platform2Dim);
@@ -552,20 +569,10 @@ void display()
 
 
 
-
-
-
-    /*plat1->drawWithTexture("platform.png");
-    plat2->drawWithTexture("platform.png");
-    plat3->drawWithTexture("platform.png");
-    plat4->drawWithTexture("platform.png");
-    plat5->drawWithTexture("platform.png");*/
-
-
     //draw flag
 
-    flag* flag1 = new flag(flagPos, flagDim);
-    flag1->drawWithTexture("flag.png");
+ 
+    flag1->drawWithTexture();
 
 
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -587,13 +594,14 @@ void keyboard(unsigned char key, int x, int y)
     case 'q':
 
         mario.left1 = true;
-        mario.textureMarioRight = true;
+        mario.setLastPosition(true);
 
 
         break;
     case 'd':
         mario.right1 = true;
-        mario.textureMarioRight = false;
+        mario.setLastPosition(false);
+       
 
         break;
     case 'z':
@@ -668,8 +676,14 @@ int main(int argc, char** argv)
     for (int i = 0; i < platformList.size(); i++) {
         platformList[i]->loadTexture();
     }
-    loadTextureLeft("marioLeft.jpg");
-    loadTextureRight("marioRight.jpg");
+    
+    flag1->loadTexture();
+    mario.loadTexture(0, "marioLeft.jpg");
+    mario.loadTexture(1, "marioRight.jpg");
+    mario.loadTexture(2, "dead.jpg");
+
+   /* loadTextureLeft("marioLeft.jpg");
+    loadTextureRight("marioRight.jpg");*/
     glutDisplayFunc(display);
 
     glutTimerFunc(1000 / 60, timer, 0);

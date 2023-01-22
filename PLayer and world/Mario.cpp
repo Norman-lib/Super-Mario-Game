@@ -1,65 +1,77 @@
 #include"Mario.h"
+#include "stb_image.h"
 
 
 Mario::Mario()
 {
-    textureRight = true;
+    gameOver = false;
+    isLastPositionLeft = false;
+    
 }
 
 void Mario::UpdatePlayerPosition(vector<float> platformPos, vector<float> platformDim)//vector of platforms.....................
 {
-    // Apply gravity
-    velocity[1] += gravity[1];
-
-    // Apply jump force if jumping
-    if (jump && canJump) {
-        velocity[1] = jumpForce;
-        jump = false;
-        canJump = false;
-    }
-    if (right1 && left1) {
-
-    }
-    else if (right1) {
-        velocity[0] = moveForce;
-    }
-    else if (left1) {
-        velocity[0] = -moveForce;
-    }
-    else {
-        velocity[0] = 0;
-    }
-
-    // Update player position based on velocity
-    Position[0] += velocity[0] * deltaTime;
-    Position[1] += velocity[1] * deltaTime;
-
-    // Check for collision with platform
-    Struct::Collision collision = checkCollision(Position,Dimension,platformPos, platformDim);
     
-    Struct::Collision collision2 = checkCollision(Position, Dimension, platformPos, platformDim); //To be changed 2 for the second platform ...................................
-    vector<Struct::Collision> cols = { collision, collision2 };
-    for (int i = 0; i < cols.size(); i++) {
-        if (cols[i].side != Struct::None) {
-            if (cols[i].side == Struct::Top) {
-                Position[1] = cols[i].pos[1] + cols[i].dim[1] + Dimension[1];
-                velocity[1] = 0;
-                canJump = true;
-            }
-            else if (cols[i].side == Struct::Bottom) {
-                Position[1] = cols[i].pos[1] - cols[i].dim[1] - Dimension[1];
-                velocity[1] = 0;
-            }
-            else if (cols[i].side == Struct::Left) {
-                Position[0] = cols[i].pos[0] - cols[i].dim[0] - Dimension[0];
-                velocity[0] = 0;
-            }
-            else if (cols[i].side == Struct::Right) {
-                Position[0] = cols[i].pos[0] + cols[i].dim[0] + Dimension[0];
-                velocity[0] = 0;
+    
+
+    if (!gameOver) {
+        // Apply gravity
+        velocity[1] += gravity[1];
+        // Apply jump force if jumping
+        if (jump && canJump) {
+            velocity[1] = jumpForce;
+            jump = false;
+            canJump = false;
+        }
+        if (right1 && left1) {
+
+        }
+        else if (right1) {
+            velocity[0] = moveForce;
+        }
+        else if (left1) {
+            velocity[0] = -moveForce;
+        }
+        else {
+            velocity[0] = 0;
+        }
+
+        // Update player position based on velocity
+        Position[0] += velocity[0] * deltaTime;
+        Position[1] += velocity[1] * deltaTime;
+
+        // Check for collision with platform
+        Struct::Collision collision = checkCollision(Position, Dimension, platformPos, platformDim);
+
+        Struct::Collision collision2 = checkCollision(Position, Dimension, platformPos, platformDim); //To be changed 2 for the second platform ...................................
+        vector<Struct::Collision> cols = { collision, collision2 };
+        for (int i = 0; i < cols.size(); i++) {
+            if (cols[i].side != Struct::None) {
+                if (cols[i].side == Struct::Top) {
+                    Position[1] = cols[i].pos[1] + cols[i].dim[1] + Dimension[1];
+                    velocity[1] = 0;
+                    canJump = true;
+                }
+                else if (cols[i].side == Struct::Bottom) {
+                    Position[1] = cols[i].pos[1] - cols[i].dim[1] - Dimension[1];
+                    velocity[1] = 0;
+                }
+                else if (cols[i].side == Struct::Left) {
+                    Position[0] = cols[i].pos[0] - cols[i].dim[0] - Dimension[0];
+                    velocity[0] = 0;
+                }
+                else if (cols[i].side == Struct::Right) {
+                    Position[0] = cols[i].pos[0] + cols[i].dim[0] + Dimension[0];
+                    velocity[0] = 0;
+                }
             }
         }
     }
+    else {
+        velocity[1] = -3.0;
+        Position[1] += velocity[1] * deltaTime;
+    }
+    
 }
 
 void  Mario::drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
@@ -70,8 +82,11 @@ void  Mario::drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
 
     // Bind the texture
      
-        
-        if (left1) {
+    if (gameOver) {
+        glBindTexture(GL_TEXTURE_2D, textureDeadMario);
+         } else 
+    
+        if (isLastPositionLeft) {
             glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
         }
         else {
@@ -219,14 +234,77 @@ void Mario::detectGoldCols(vector<vector<float>> goldPos,float radius) {
 }
 
 
-void Mario::detectEnnemyCols(vector<vector<float>> EnnemyPos, vector<float> dim) {
-    for (int i = 0; i < EnnemyPos.size(); i++) {
-        Struct::Collision collision = checkCollision(Position, Dimension, EnnemyPos[i], { dim[0],dim[1] });
+int Mario::detectEnnemyCols(vector<float> EnnemyPos, vector<float> dim) {
+    
+        Struct::Collision collision = checkCollision(Position, Dimension, EnnemyPos, { dim[0],dim[1] });
         if (collision.side != Struct::None) {
-            EnnemyPos.erase(EnnemyPos.begin() + i);
 
-            cout << "Game Over";/////
-            return;
+            if (collision.side == Struct::Top) {
+                cout << "top" << endl;
+                return 1;
+            }
+            else  if (collision.side == Struct::Right) {
+                gameOver = true;
+                cout << "right" << endl;
+                return 2;
+            }
+            else if ((collision.side == Struct::Left)) {
+                cout << "left" << endl;
+                gameOver = true;
+                return 2;
+            }
+            else if ((collision.side == Struct::Bottom)) {
+                cout << "bottom" << endl;
+                gameOver = true;
+                return 2;
+            }
+
+            return 0;
         }
+        else {
+            return 0;
+        }
+    
+}
+
+void Mario::loadTexture(int a, const char* fileName) {
+    int width, height, numComponents;
+    unsigned char* imageData = stbi_load(fileName, &width, &height, &numComponents, 0);
+
+    if (imageData == NULL)
+        std::cerr << "Unable to load texture: " << fileName << std::endl;
+    else {
+        cout << "worked" << endl;
+        cout << "gold :" << width << endl;
+        cout << "gold :" << height << endl;
+        cout << "gold :" << numComponents << endl;
+
     }
+    // Generate the texture object
+    if (a == 0) {
+        glGenTextures(1, &textureMarioLeft);
+        glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
+    }
+    else if (a == 1) {
+        glGenTextures(1, &textureMarioRight);
+        glBindTexture(GL_TEXTURE_2D, textureMarioRight);
+    }
+    else {
+        glGenTextures(1, &textureDeadMario);
+        glBindTexture(GL_TEXTURE_2D, textureDeadMario);
+    }
+    
+    
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Copy the image data to the texture object
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    // Free the image data
+    stbi_image_free(imageData);
 }
