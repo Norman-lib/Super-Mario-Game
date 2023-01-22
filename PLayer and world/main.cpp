@@ -1,17 +1,10 @@
 
-#include <gl/glew.h>
-#include <GL/freeglut.h>
-#include <vector>
-#include <string>;
-#include <iostream>
-#include <irrKlang.h>
+
+#include "Ennemy.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 
-using namespace std;
-
-using namespace irrklang;
 
 //texture vars;
 unsigned char* marioLeftData;
@@ -26,6 +19,7 @@ ISoundEngine* coinSound = createIrrKlangDevice();
 
 GLfloat playerX = 0.0f;
 vector<float> gravity = { 0, -0.5 };
+
 
 vector<float> platformPos = { 0,-1 };
 vector<float> platformDim = { 10.0,0.5 };
@@ -53,6 +47,9 @@ vector<vector<float>> goldPos = { {-5,0},{2, 1} };
 float enemyWidth = 0.5f;
 vector<vector<float>> enemyPos = { {-5, 0} , {3, 3} };
 vector<vector<float>> enemiesSpeed = { {moveForce, 0}, {moveForce,0} };
+
+
+Enemy* enemy = new Enemy(enemyPos[0], {enemyWidth, enemyWidth});
 
 void drawGold(vector<vector<float>> g) {
     
@@ -114,7 +111,6 @@ void drawRectangle(vector<float> pos, vector<float> dim ) {
 }
 
 
-
 enum CollisionSide {
     None,
     Top,
@@ -128,6 +124,7 @@ struct Collision {
     vector<float> dim;
 
 };
+
 
 Collision checkCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
     // Calculate the edges of the player square
@@ -240,7 +237,7 @@ void updatePlayerPosition() {
     }
     if (right1 && left1) {
     
-    } else if (right1 ) {
+    } else if (right1) {
         velocity[0] = moveForce;
     } else if (left1) {
         velocity[0] = -moveForce;
@@ -484,7 +481,8 @@ void display()
     glVertex2f(18.0f, -18.0f);
     glVertex2f(-18.0f, -18.0f);
     glEnd();
-
+    glColor3f(0.0, 1.0, 0.0);
+    enemy->drawEnemy();
 
     // Draw the player square
     drawPlayerWithTexture(playerPos, playerDim);
