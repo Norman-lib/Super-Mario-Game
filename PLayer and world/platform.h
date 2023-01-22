@@ -1,5 +1,6 @@
 #pragma once
 #include "utils.h"
+#include "stb_image.h"
 
 
 using namespace std;
@@ -15,6 +16,7 @@ public:
 
 	//Methods
 	void draw();
+	void drawWithTexture(const char* filename);
 	vector<float> getPos();
 	vector<float> getDim();
 

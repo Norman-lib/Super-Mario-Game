@@ -500,7 +500,7 @@ void display()
     //drawRectangle(platform2Pos, platform2Dim);
     platform* plat1=new platform(platformPos, platformDim);
     platform* plat2 = new platform(platform2Pos, platform2Dim);
-    plat1->draw();
+    plat1->drawWithTexture("platform.png");
     plat2->draw();
     
     //draw flag
