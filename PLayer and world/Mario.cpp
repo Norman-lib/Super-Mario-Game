@@ -9,7 +9,7 @@ Mario::Mario()
     
 }
 
-void Mario::UpdatePlayerPosition(vector<float> platformPos, vector<float> platformDim)//vector of platforms.....................
+void Mario::UpdatePlayerPosition(vector<platform*> plats)//vector of platforms.....................
 {
     
     
@@ -35,33 +35,33 @@ void Mario::UpdatePlayerPosition(vector<float> platformPos, vector<float> platfo
         else {
             velocity[0] = 0;
         }
-
+        
         // Update player position based on velocity
         Position[0] += velocity[0] * deltaTime;
         Position[1] += velocity[1] * deltaTime;
 
         // Check for collision with platform
-        Struct::Collision collision = checkCollision(Position, Dimension, platformPos, platformDim);
+       
 
-        Struct::Collision collision2 = checkCollision(Position, Dimension, platformPos, platformDim); //To be changed 2 for the second platform ...................................
-        vector<Struct::Collision> cols = { collision, collision2 };
-        for (int i = 0; i < cols.size(); i++) {
-            if (cols[i].side != Struct::None) {
-                if (cols[i].side == Struct::Top) {
-                    Position[1] = cols[i].pos[1] + cols[i].dim[1] + Dimension[1];
+        
+        for (int i = 0; i < plats.size(); i++) {
+            Struct::Collision collision = checkCollision(Position, Dimension, plats[i]->getPos(), plats[i]->getDim());
+            if (collision.side != Struct::None) {
+                if (collision.side == Struct::Top) {
+                    Position[1] = collision.pos[1] + collision.dim[1] + Dimension[1];
                     velocity[1] = 0;
                     canJump = true;
                 }
-                else if (cols[i].side == Struct::Bottom) {
-                    Position[1] = cols[i].pos[1] - cols[i].dim[1] - Dimension[1];
+                else if (collision.side == Struct::Bottom) {
+                    Position[1] = collision.pos[1] - collision.dim[1] - Dimension[1];
                     velocity[1] = 0;
                 }
-                else if (cols[i].side == Struct::Left) {
-                    Position[0] = cols[i].pos[0] - cols[i].dim[0] - Dimension[0];
+                else if (collision.side == Struct::Left) {
+                    Position[0] = collision.pos[0] - collision.dim[0] - Dimension[0];
                     velocity[0] = 0;
                 }
-                else if (cols[i].side == Struct::Right) {
-                    Position[0] = cols[i].pos[0] + cols[i].dim[0] + Dimension[0];
+                else if (collision.side == Struct::Right) {
+                    Position[0] = collision.pos[0] + collision.dim[0] + Dimension[0];
                     velocity[0] = 0;
                 }
             }

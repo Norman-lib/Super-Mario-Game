@@ -465,7 +465,7 @@ void timer(int value) {
     mario.currentTime = currentTime;
     mario.deltaTime = deltaTime;
     mario.lastTime = currentTime;
-    mario.UpdatePlayerPosition(platformPos,platformDim);
+    mario.UpdatePlayerPosition(platformList);
    
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->setDeltaTime(deltaTime);
@@ -505,7 +505,9 @@ int colValue;
 
 void display()
 {
-    mario.UpdatePlayerPosition(platformPos,platformDim);
+   
+    mario.UpdatePlayerPosition(platformList);
+   
     
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->Move();

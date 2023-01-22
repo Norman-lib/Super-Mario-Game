@@ -7,7 +7,7 @@
 #include <iostream>
 #include <irrKlang.h>
 #include"Strecture.h"
-
+#include "platform.h"
 
 using namespace std;
 
@@ -54,7 +54,7 @@ public:
 	void setScore() { score += 1; }
 	vector<float> getPosition() { return Position; }
 	vector<float> getDimension(){ return Dimension; }
-	void UpdatePlayerPosition(vector<float> platformPos, vector<float> platformDim);
+	void UpdatePlayerPosition(vector<platform*>);
 	
 	void  setPosition(vector<float> pos) { Position = pos; }
 	void drawPlayerWithTexture(vector<float> pos, vector<float> dim);
