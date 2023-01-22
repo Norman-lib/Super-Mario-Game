@@ -24,25 +24,6 @@ void platform::draw() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void platform::drawWithTexture(const char* filename) {
-
-    
-
-
-    glColor3f(1.0f, 1.0f, 1.0f);
-    // Enable texture coordinates
-   
-
-    // Draw the shape
-    glBegin(GL_QUADS);
-    // Set the texture coordinates for each vertex
-   
-    glEnd();
-
-    // Unbind the texture
-   
-
-}
 
 vector<float> platform::getDim() {
     return dim;
