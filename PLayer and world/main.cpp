@@ -538,14 +538,16 @@ int main(int argc, char** argv)
 
     Gold* gold1 = new Gold();
     gold1->setPosition({ -5,0 });
+    gold1->loadTexture("coin.jpg");
     Gold* gold2 = new Gold();
     gold2->setPosition({ 2, 1 });
+    gold2->loadTexture("coin.jpg");
     Gold* gold3= new Gold();
     gold3->setPosition({ -7, 0 });
+    gold3->loadTexture("coin.jpg");
     Gold* gold4 = new Gold();
     gold4->setPosition({ 4, 1 });
-
-
+    gold4->loadTexture("coin.jpg");
 
     Golds.push_back(gold1); 
     Golds.push_back(gold2); 

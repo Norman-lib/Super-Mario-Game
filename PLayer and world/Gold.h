@@ -16,7 +16,9 @@ public:
 	Gold();
 	//attributs
 	vector<float> goldPos;
+	vector<float> dim = { {0.5f,0.5f} };
 	float radius = 0.5;
+	GLuint textureCoins;
 	//getters
 	vector<float> getPosition() { return goldPos; }
 
@@ -24,6 +26,7 @@ public:
 	void setPosition(vector<float> a) { goldPos = a;  }
 	//methodes
 	void drawGold(vector<float>);
+	void loadTexture(const char* filename); 
 
 };
 
