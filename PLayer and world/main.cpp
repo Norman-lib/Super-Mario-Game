@@ -1,11 +1,22 @@
 
 
+
 #include "platform.h"
 #include "flag.h"
+
+#include "Gold.h" 
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Ennemy.h"
 
+
+
+
+vector<Gold*> Golds ; // � remplir avec le gold 
+
+
+using namespace std;
 
 
 
@@ -15,10 +26,12 @@ int marioWidth, marioHeight, marioNrChannels;
 
 
 
-string coinSoundstr = "sounds\\coin.ogg";
+    string coinSoundstr = "sounds\\coin.ogg";
+
 
 const char* coinSoundPath = coinSoundstr.c_str();
 //ISoundEngine* coinSound = createIrrKlangDevice();
+
 
 GLfloat playerX = 0.0f;
 vector<float> gravity = { 0, -0.5 };
@@ -62,7 +75,7 @@ float deltaTime = 0.0f;
 float currentTime = 0.0f;
 float lastTime = 0.0f;
 float radius = 0.5;
-vector<vector<float>> goldPos = { {-5,0},{2, 1} };
+// vector<vector<float>> goldPos = { {-5,0},{2, 1} };
 
 float enemyWidth = 0.5f;
 vector<vector<float>> enemyPos = {   {3, 3} };
@@ -73,19 +86,6 @@ Enemy* enemy = new Enemy({ -5, 0 }, {enemyWidth, enemyWidth});
 
 vector <Enemy*> enemies = { enemy };
 
-void drawGold(vector<vector<float>> g) {
-    
-    for (int j = 0; j < goldPos.size(); j++) {
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(goldPos[j][0], goldPos[j][1]);
-        for (int i = 0; i <= 360; i++) {
-            float rad = i * 3.14159 / 180;
-            glVertex2f(goldPos[j][0] + cos(rad) * radius, goldPos[j][1] + sin(rad) * radius);
-        }
-        glEnd();
-   }
-        
-}
 
 
 GLuint textureMarioLeft;
@@ -121,8 +121,6 @@ void loadTexture(const char* filename) {
 }
 
 
-
-
 void drawRectangle(vector<float> pos, vector<float> dim ) {
     glBegin(GL_QUADS);
     glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
@@ -144,63 +142,58 @@ struct Collision {
     CollisionSide side;
     vector<float> pos;
     vector<float> dim;
-
 };
 
 
 Collision checkCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
-    // Calculate the edges of the player square
-    Collision col;
-    col.dim = platformDim;
-    col.pos = platformPos;
-    float playerLeft = playerPos[0] - playerDim[0];
-    float playerRight = playerPos[0] + playerDim[0];
-    float playerTop = playerPos[1] + playerDim[1];
-    float playerBottom = playerPos[1] - playerDim[1];
+        // Calculate the edges of the player square
+        Collision col;
+        col.dim = platformDim;
+        col.pos = platformPos;
+        float playerLeft = playerPos[0] - playerDim[0];
+        float playerRight = playerPos[0] + playerDim[0];
+        float playerTop = playerPos[1] + playerDim[1];
+        float playerBottom = playerPos[1] - playerDim[1];
 
-    // Calculate the edges of the platform rectangle
-    float platformLeft = platformPos[0] - platformDim[0];
-    float platformRight = platformPos[0] + platformDim[0];
-    float platformTop = platformPos[1] + platformDim[1];
-    float platformBottom = platformPos[1] - platformDim[1];
+        // Calculate the edges of the platform rectangle
+        float platformLeft = platformPos[0] - platformDim[0];
+        float platformRight = platformPos[0] + platformDim[0];
+        float platformTop = platformPos[1] + platformDim[1];
+        float platformBottom = platformPos[1] - platformDim[1];
     
-    // Check for collision on the top side
-    if (playerBottom < platformTop && playerTop > platformTop &&
-        playerRight > platformLeft && playerLeft < platformRight) {
-        col.side = Top;
-        return col;
-    }
+        // Check for collision on the top side
+        if (playerBottom < platformTop && playerTop > platformTop &&
+            playerRight > platformLeft && playerLeft < platformRight) {
+            col.side = Top;
+            return col;
+        }
 
-    // Check for collision on the bottom side
-    if (playerTop > platformBottom && playerBottom < platformBottom &&
-        playerRight > platformLeft && playerLeft < platformRight) {
-        col.side = Bottom;
-        return col;
-    }
+        // Check for collision on the bottom side
+        if (playerTop > platformBottom && playerBottom < platformBottom &&
+            playerRight > platformLeft && playerLeft < platformRight) {
+            col.side = Bottom;
+            return col;
+        }
 
-    // Check for collision on the left side
-    if (playerRight > platformLeft && playerLeft < platformLeft &&
-        playerBottom < platformTop && playerTop > platformBottom) {
-        col.side = Left;
-        return col;
+        // Check for collision on the left side
+        if (playerRight > platformLeft && playerLeft < platformLeft &&
+            playerBottom < platformTop && playerTop > platformBottom) {
+            col.side = Left;
+            return col;
       
-    }
+        }
 
-    // Check for collision on the right side
-    if (playerLeft < platformRight && playerRight > platformRight &&
-        playerBottom < platformTop && playerTop > platformBottom) {
-        col.side = Right;
+        // Check for collision on the right side
+        if (playerLeft < platformRight && playerRight > platformRight &&
+            playerBottom < platformTop && playerTop > platformBottom) {
+            col.side = Right;
+            return col;
+        }
+
+        // If no collision is detected, return None
+        col.side = None;
         return col;
     }
-
-    
-
-   
-
-    // If no collision is detected, return None
-    col.side = None;
-    return col;
-}
 
 bool DetectCollisionWPlayer(vector<float> targetPos, vector<float> targetDims) {
     return playerPos[1] - playerDim[1] < targetPos[1] + targetDims[1] &&
@@ -460,22 +453,27 @@ void timer(int value) {
     }
    
     glutPostRedisplay();
+   
     glutTimerFunc(1000 / 60, timer, 0);
 }
 
 
-void detectGoldCols() {
-    for (int i = 0; i < goldPos.size(); i++) {
-        Collision collision = checkCollision(playerPos, playerDim, goldPos[i], { radius, radius });
+void detectGoldCols(vector<float> playerPos, vector<float> playerDim, int score, Gold* gold) { //getScore au lieu de score
+   
+        Collision collision = checkCollision(playerPos, playerDim, gold->getPosition(), { radius, radius });
         if (collision.side != None) {
-            goldPos.erase(goldPos.begin() + i);
-            score += 1;
-            //coinSound->play2D(coinSoundPath, false);
+
+            Golds.erase(find(Golds.begin(), Golds.end(), gold)); 
+            score += 1; //SetScore() du player
+            coinSound->play2D(coinSoundPath, false);
+
             cout << "your score : " << score << endl;
             return;
-            }
         }
-    }
+    
+  
+}
+
 
 void displayScore() {
     std::string score_str = std::to_string(score);
@@ -529,9 +527,11 @@ void display()
 
 
     glColor3f(1.0, 0.843137, 0.0);
-    drawGold(goldPos);
 
-    detectGoldCols();
+    for (int i = 0; i < Golds.size(); i++) {
+        Golds[i]->drawGold(Golds[i]->getPosition()); 
+        detectGoldCols(playerPos, playerDim, score, Golds[i]);
+    }
  
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
@@ -570,9 +570,6 @@ void display()
 
 
     glutSwapBuffers();
-}
-
-void keyboard(unsigned char key, int x, int y)
 {
     switch (key)  {
     case 'q':
@@ -612,7 +609,7 @@ int main(int argc, char** argv)
     string themeSongstr = "C:\\Users\\Norma\\source\\repos\\Piano-freeGlut-\\Piano (freeGlut)\\piano\\black notes\\100.ogg";
     themeSongstr = "sounds\\theme.ogg";
     const char* themeSong = themeSongstr.c_str();
-   // ISoundEngine* SoundEngine = createIrrKlangDevice();
+
    // SoundEngine->play2D(themeSong, true);
     
     //const char* c= &music;
@@ -622,7 +619,27 @@ int main(int argc, char** argv)
     platformList.push_back(plat3);
     platformList.push_back(plat4);
     platformList.push_back(plat5);
-    glutInit(&argc, argv);
+
+
+    Gold* gold1 = new Gold();
+    gold1->setPosition({ -5,0 });
+    gold1->loadTexture("coin.jpg");
+    Gold* gold2 = new Gold();
+    gold2->setPosition({ 2, 1 });
+    gold2->loadTexture("coin.jpg");
+    Gold* gold3= new Gold();
+    gold3->setPosition({ -7, 0 });
+    gold3->loadTexture("coin.jpg");
+    Gold* gold4 = new Gold();
+    gold4->setPosition({ 4, 1 });
+    gold4->loadTexture("coin.jpg");
+
+    Golds.push_back(gold1); 
+    Golds.push_back(gold2); 
+    Golds.push_back(gold3);
+    Golds.push_back(gold4);
+
+
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800, 800);
     glutCreateWindow("Player and World");
