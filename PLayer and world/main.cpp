@@ -6,6 +6,7 @@
 
 #include "Gold.h" 
 
+#include"Mario.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Ennemy.h"
@@ -24,6 +25,7 @@ using namespace std;
 unsigned char* marioLeftData;
 int marioWidth, marioHeight, marioNrChannels;
 
+Mario mario = Mario();
 
 
     string coinSoundstr = "sounds\\coin.ogg";
@@ -71,13 +73,7 @@ Gold* gold4 = new Gold();
 
 int score = 0;
 
-bool jump;
-bool canJump = false;
-bool left1;
-bool right1;
-vector<float> velocity = { 0, 0 };
-float jumpForce = 10.0f;
-float moveForce = 2.0f;
+
 float deltaTime = 0.0f;
 float currentTime = 0.0f;
 float lastTime = 0.0f;
@@ -85,8 +81,9 @@ float radius = 0.5;
 // vector<vector<float>> goldPos = { {-5,0},{2, 1} };
 
 float enemyWidth = 0.5f;
+float moveForce = 2.0f;
 vector<vector<float>> enemyPos = {   {3, 3} };
-vector<vector<float>> enemiesSpeed = { {moveForce, 0} };
+vector<vector<float>> enemiesSpeed = {{moveForce, 0} };
 
 
 Enemy* enemy = new Enemy({ -5, 0 }, {enemyWidth, enemyWidth});
@@ -95,9 +92,8 @@ vector <Enemy*> enemies = { enemy };
 
 
 
-GLuint textureMarioLeft;
 
-void loadTexture(const char* filename) {
+void loadTextureLeft(const char* filename) {
     int width, height, numComponents;
     unsigned char* imageData = stbi_load(filename, &width, &height, &numComponents, 0);
 
@@ -110,9 +106,40 @@ void loadTexture(const char* filename) {
         cout << "width :" << numComponents << endl;
 
     }
+   
     // Generate the texture object
-    glGenTextures(1, &textureMarioLeft);
-    glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
+    glGenTextures(1, &mario.textureMarioLeft);
+    glBindTexture(GL_TEXTURE_2D, mario.textureMarioLeft);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Copy the image data to the texture object
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    // Free the image data
+    stbi_image_free(imageData);
+}
+
+void loadTextureRight(const char* filename) {
+    int width, height, numComponents;
+    unsigned char* imageData = stbi_load(filename, &width, &height, &numComponents, 0);
+
+    if (imageData == NULL)
+        std::cerr << "Unable to load texture: " << filename << std::endl;
+    else {
+        cout << "worked" << endl;
+        cout << "width :" << width << endl;
+        cout << "width :" << height << endl;
+        cout << "width :" << numComponents << endl;
+
+    }
+    // Generate the texture object
+    glGenTextures(1, &mario.textureMarioRight);
+    glBindTexture(GL_TEXTURE_2D, mario.textureMarioRight);
 
     // Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -126,6 +153,7 @@ void loadTexture(const char* filename) {
     // Free the image data
     stbi_image_free(imageData);
 }
+
 
 
 void drawRectangle(vector<float> pos, vector<float> dim ) {
@@ -209,7 +237,7 @@ bool DetectCollisionWPlayer(vector<float> targetPos, vector<float> targetDims) {
         playerPos[0] + playerDim[0] > targetPos[0] - targetDims[0];
 }
 
-CollisionSide checkEnemyCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
+CollisionSide checkEnemyCollision1(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
     
     float playerLeft = playerPos[0] - playerDim[0];
     float playerRight = playerPos[0] + playerDim[0];
@@ -247,66 +275,66 @@ CollisionSide checkEnemyCollision(vector<float> playerPos, vector<float> playerD
     return None;
 }
 
-void updatePlayerPosition() {
-    // Apply gravity
-    velocity[1] += gravity[1];
-
-    // Apply jump force if jumping
-    if (jump && canJump) {
-        velocity[1] = jumpForce;
-        jump = false;
-        canJump = false;
-    }
-    if (right1 && left1) {
-    
-    } else if (right1) {
-        velocity[0] = moveForce;
-    } else if (left1) {
-        velocity[0] = -moveForce;
-    }
-    else {
-        velocity[0] = 0;
-    }
-    // Update player position based on velocity
-    playerPos[0] += velocity[0] * deltaTime;
-    playerPos[1] += velocity[1] * deltaTime;
-
-    // Check for collision with platform
-    //if (DetectCollisionWPlayer(platformPos, platformDim)) {
-
-    //    // Set player position to top of platform
-    //    playerPos[1] = platformPos[1] + platformDim[1] + playerDim[1];
-    //    velocity[1] = 0;
-    //    canJump = true;
-    //}
-    // Check for collision with platform
-    Collision collision = checkCollision(playerPos, playerDim, platformPos, platformDim);
-    Collision collision2 = checkCollision(playerPos, playerDim, platform2Pos, platform2Dim);
-    vector<Collision> cols = { collision, collision2 };
-    for (int i = 0; i < cols.size(); i++) {
-        if (cols[i].side != None) {
-            if (cols[i].side == Top) {
-                playerPos[1] = cols[i].pos[1] + cols[i].dim[1] + playerDim[1];
-                velocity[1] = 0;
-                canJump = true;
-            }
-            else if (cols[i].side == Bottom) {
-                playerPos[1] = cols[i].pos[1] - cols[i].dim[1] - playerDim[1];
-                velocity[1] = 0;
-            }
-            else if (cols[i].side == Left) {
-                playerPos[0] = cols[i].pos[0] - cols[i].dim[0] - playerDim[0];
-                velocity[0] = 0;
-            }
-            else if (cols[i].side == Right) {
-                playerPos[0] = cols[i].pos[0] + cols[i].dim[0] + playerDim[0];
-                velocity[0] = 0;
-            }
-        }
-    }
-       
-
-}
+//void updatePlayerPosition() {
+//    // Apply gravity
+//    velocity[1] += gravity[1];
+//
+//    // Apply jump force if jumping
+//    if (jump && canJump) {
+//        velocity[1] = jumpForce;
+//        jump = false;
+//        canJump = false;
+//    }
+//    if (right1 && left1) {
+//    
+//    } else if (right1) {
+//        velocity[0] = moveForce;
+//    } else if (left1) {
+//        velocity[0] = -moveForce;
+//    }
+//    else {
+//        velocity[0] = 0;
+//    }
+//    // Update player position based on velocity
+//    playerPos[0] += velocity[0] * deltaTime;
+//    playerPos[1] += velocity[1] * deltaTime;
+//
+//    // Check for collision with platform
+//    //if (DetectCollisionWPlayer(platformPos, platformDim)) {
+//
+//    //    // Set player position to top of platform
+//    //    playerPos[1] = platformPos[1] + platformDim[1] + playerDim[1];
+//    //    velocity[1] = 0;
+//    //    canJump = true;
+//    //}
+//    // Check for collision with platform
+//    Collision collision = checkCollision(playerPos, playerDim, platformPos, platformDim);
+//    Collision collision2 = checkCollision(playerPos, playerDim, platform2Pos, platform2Dim);
+//    vector<Collision> cols = { collision, collision2 };
+//    for (int i = 0; i < cols.size(); i++) {
+//        if (cols[i].side != None) {
+//            if (cols[i].side == Top) {
+//                playerPos[1] = cols[i].pos[1] + cols[i].dim[1] + playerDim[1];
+//                velocity[1] = 0;
+//                canJump = true;
+//            }
+//            else if (cols[i].side == Bottom) {
+//                playerPos[1] = cols[i].pos[1] - cols[i].dim[1] - playerDim[1];
+//                velocity[1] = 0;
+//            }
+//            else if (cols[i].side == Left) {
+//                playerPos[0] = cols[i].pos[0] - cols[i].dim[0] - playerDim[0];
+//                velocity[0] = 0;
+//            }
+//            else if (cols[i].side == Right) {
+//                playerPos[0] = cols[i].pos[0] + cols[i].dim[0] + playerDim[0];
+//                velocity[0] = 0;
+//            }
+//        }
+//    }
+//       
+//
+//}
 
 
 void updateEnemiesPosition() {
@@ -314,17 +342,17 @@ void updateEnemiesPosition() {
         enemiesSpeed[j][1] += gravity[1];
 
 
-       CollisionSide side2 = checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, platform2Pos, platform2Dim);
-       CollisionSide side = checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, platformPos, platformDim);
+        Struct::CollisionSide side2 = mario.checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, platform2Pos, platform2Dim);
+        Struct::CollisionSide side = mario.checkEnemyCollision(enemyPos[j], { enemyWidth, enemyWidth }, platformPos, platformDim);
 
 
         //moveleft and right for enemies
-        if ( side == Left || side2 == Left) {
-            enemiesSpeed[j][0] = moveForce;
+        if ( side == Struct::CollisionSide::Left || side2 == Struct::CollisionSide::Left) {
+            enemiesSpeed[j][0] = mario.moveForce;
         }
-        if (side == Right || side2 == Right) {
+        if (side == Struct::CollisionSide::Right || side2 == Struct::CollisionSide::Right) {
 
-            enemiesSpeed[j][0] = -moveForce;
+            enemiesSpeed[j][0] = -mario.moveForce;
         }
 
         // Update player position based on velocity
@@ -332,26 +360,26 @@ void updateEnemiesPosition() {
         enemyPos[j][1] += enemiesSpeed[j][1] * deltaTime;
 
 
-        Collision collision = checkCollision(enemyPos[j], { enemyWidth , enemyWidth}, platformPos, platformDim);
-        Collision collision2 = checkCollision(enemyPos[j], { enemyWidth , enemyWidth }, platform2Pos, platform2Dim);
-        vector<Collision> cols = { collision, collision2 };
+        Struct::Collision collision = mario.checkCollision(enemyPos[j], { enemyWidth , enemyWidth}, platformPos, platformDim);
+        Struct::Collision collision2 = mario.checkCollision(enemyPos[j], { enemyWidth , enemyWidth }, platform2Pos, platform2Dim);
+        vector<Struct::Collision> cols = { collision, collision2 };
         for (int i = 0; i < cols.size(); i++)
         {
-            if (cols[i].side != None) {
-                if (cols[i].side == Top) {
+            if (cols[i].side != Struct::CollisionSide::None) {
+                if (cols[i].side == Struct::CollisionSide::Top) {
                     enemyPos[j][1] = cols[i].pos[1] + cols[i].dim[1] + enemyWidth;
                     enemiesSpeed[j][1] = 0;
                     
                 }
-                else if (cols[i].side == Bottom) {
+                else if (cols[i].side == Struct::CollisionSide::Bottom) {
                     enemyPos[j][1] = cols[i].pos[1] - cols[i].dim[1] - enemyWidth;
                     enemiesSpeed[j][1] = 0;
                 }
-                else if (cols[i].side == Left) {
+                else if (cols[i].side == Struct::CollisionSide::Left) {
                     enemyPos[j][0] = cols[i].pos[0] - cols[i].dim[0] - enemyWidth;
                     enemiesSpeed[j][0] = 0;
                 }
-                else if (cols[i].side == Right) {
+                else if (cols[i].side == Struct::CollisionSide::Right) {
                     enemyPos[j][0] = cols[i].pos[0] + cols[i].dim[0] + enemyWidth;
                     enemiesSpeed[j][0] = 0;
                 }
@@ -360,6 +388,7 @@ void updateEnemiesPosition() {
 
 
     }
+
 
 
     // Apply gravity
@@ -419,32 +448,7 @@ void updateEnemiesPosition() {
 
 }
 
-void drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-    // Enable texture coordinates
-    glEnable(GL_TEXTURE_2D);
-
-    // Bind the texture
-    glBindTexture(GL_TEXTURE_2D, textureMarioLeft);
-
-    // Draw the shape
-    glBegin(GL_QUADS);
-    // Set the texture coordinates for each vertex
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex2f(pos[0] + dim[0], pos[1] + dim[1]);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex2f(pos[0] - dim[0], pos[1] + dim[1]);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex2f(pos[0] + dim[0], pos[1] - dim[1]);
-    glEnd();
-
-    // Unbind the texture
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-}
 
 void timer(int value) {
     currentTime = glutGet(GLUT_ELAPSED_TIME);
@@ -452,7 +456,11 @@ void timer(int value) {
     
     
     lastTime = currentTime;
-    updatePlayerPosition();
+   // updatePlayerPosition();
+    mario.currentTime = currentTime;
+    mario.deltaTime = deltaTime;
+    mario.lastTime = currentTime;
+    mario.UpdatePlayerPosition(platformPos,platformDim);
     updateEnemiesPosition();
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->setDeltaTime(deltaTime);
@@ -482,13 +490,7 @@ void detectGoldCols(vector<float> playerPos, vector<float> playerDim, int score,
 }
 
 
-void displayScore() {
-    std::string score_str = std::to_string(score);
-    glRasterPos2f(0, 18);
-    for (int i = 0; i < score_str.length(); i++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, score_str[i]);
-    }
-}
+
 
 
 
@@ -497,8 +499,8 @@ vector<platform*> platformList;
 
 void display()
 {
-
-    updatePlayerPosition();
+    mario.UpdatePlayerPosition(platformPos,platformDim);
+    
     updateEnemiesPosition();
     enemy->Move(plat1);
 
@@ -527,7 +529,7 @@ void display()
     }
 
     // Draw the player square
-    drawPlayerWithTexture(playerPos, playerDim);
+    mario.drawPlayerWithTexture(mario.getPosition(), mario.getDimension());
 
 
 
@@ -538,6 +540,8 @@ void display()
         detectGoldCols(playerPos, playerDim, score, Golds[i]);
     }
 
+    //mario.detectGoldCols(goldPos,radius);
+    mario.detectEnnemyCols(enemyPos, { enemyWidth,enemyWidth });
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
     //drawRectangle(platform2Pos, platform2Dim);
@@ -571,35 +575,43 @@ void display()
     }
 
     glColor3f(1.0f, 1.0f, 1.0f);
-    displayScore();
+    mario.displayScore();
 
 
     glutSwapBuffers();
 }
-    void keyboard(unsigned char key, int x, int y)
-    {
-        switch (key) {
-        case 'q':
-            left1 = true;
-            break;
-        case 'd':
-            right1 = true;
-            break;
-        case 'z':
-            jump = true;
-            break;
-        }
-        glutPostRedisplay();
+
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key) {
+    case 'q':
+
+        mario.left1 = true;
+        mario.textureMarioRight = true;
+
+
+        break;
+    case 'd':
+        mario.right1 = true;
+        mario.textureMarioRight = false;
+
+        break;
+    case 'z':
+        mario.jump = true;
+        break;
     }
+}
 
 void keyboardUp(unsigned char key, int x, int y) {
     switch (key) {
     case 'q':
-        left1 = false;
+        mario.left1 = false;
         
         break;
     case 'd':
-        right1 = false;
+        mario.right1 = false;
+        cout << mario.right1;
+        
         break;
     case 'z':
         
@@ -646,7 +658,7 @@ int main(int argc, char** argv)
     glClearColor(0.49, 0.47, 0.87, 1.0f);
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);
-    loadTexture("marioLeft.jpg");
+    
     for (int i = 0; i < Golds.size(); i++) {
         Golds[i]->loadTexture("coin.jpg");
     }
@@ -656,6 +668,8 @@ int main(int argc, char** argv)
     for (int i = 0; i < platformList.size(); i++) {
         platformList[i]->loadTexture();
     }
+    loadTextureLeft("marioLeft.jpg");
+    loadTextureRight("marioRight.jpg");
     glutDisplayFunc(display);
 
     glutTimerFunc(1000 / 60, timer, 0);
