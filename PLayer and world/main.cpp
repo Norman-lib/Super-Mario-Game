@@ -18,18 +18,30 @@ int marioWidth, marioHeight, marioNrChannels;
 string coinSoundstr = "sounds\\coin.ogg";
 
 const char* coinSoundPath = coinSoundstr.c_str();
-ISoundEngine* coinSound = createIrrKlangDevice();
+//ISoundEngine* coinSound = createIrrKlangDevice();
 
 GLfloat playerX = 0.0f;
 vector<float> gravity = { 0, -0.5 };
 
-
+//platform
 vector<float> platformPos = { 0,-1 };
-vector<float> platformDim = { 5.0,0.5 };
+vector<float> platformDim = { 10.0,0.5 };
+vector<float> platform2Pos = { 5,2.0 };
+vector<float> platform2Dim = { 5.0,0.5 };
+vector<float> platform3Pos = { 0.0,5.0 };
+vector<float> platform3Dim = { 3.0,0.5 };
+vector<float> platform4Pos = { -3.0,8.0 };
+vector<float> platform4Dim = { 7.0,0.5 };
+vector<float> platform5Pos = { 9.0,6.0 };
+vector<float> platform5Dim = { 3.0,0.5 };
+
+
+//flag
+vector<float> flagPos = { -9.5,9.0 };
+vector<float> flagDim = { 0.5,0.5 };
+
 vector<vector<vector<float>>*> obstacles;
 
-vector<float> platform2Pos = { 5,2 };
-vector<float> platform2Dim = { 5.0,0.5 };
 vector<float> playerPos = {-1,0};
 vector<float> playerDim = {0.5,0.5};
 
@@ -458,7 +470,7 @@ void detectGoldCols() {
         if (collision.side != None) {
             goldPos.erase(goldPos.begin() + i);
             score += 1;
-            coinSound->play2D(coinSoundPath, false);
+            //coinSound->play2D(coinSoundPath, false);
             cout << "your score : " << score << endl;
             return;
             }
@@ -474,7 +486,11 @@ void displayScore() {
 }
 
 
-vector <platform*> platforms = { plat1, plat2 };
+
+platform* plat3 = new platform(platform3Pos, platform3Dim);
+platform* plat4 = new platform(platform4Pos, platform4Dim);
+platform* plat5 = new platform(platform5Pos, platform5Dim);
+vector<platform*> platformList;
 
 void display()
 {
@@ -520,15 +536,25 @@ void display()
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
     //drawRectangle(platform2Pos, platform2Dim);
-    for (int i = 0; i < platforms.size(); i++) {
-        platforms[i]->draw();
+
+    for (int i = 0; i < platformList.size(); i++) {
+        platformList[i]->draw();
     }
    
  
+
+   
+   
+
+    /*plat1->drawWithTexture("platform.png");
+    plat2->drawWithTexture("platform.png");
+    plat3->drawWithTexture("platform.png");
+    plat4->drawWithTexture("platform.png");
+    plat5->drawWithTexture("platform.png");*/
+
     
     //draw flag
-    vector<float> flagPos = { 2,0 };
-    vector<float> flagDim = { 0.5,0.5 };
+
     flag* flag1 = new flag(flagPos, flagDim);
     flag1->drawWithTexture("flag.png");
 
@@ -586,12 +612,16 @@ int main(int argc, char** argv)
     string themeSongstr = "C:\\Users\\Norma\\source\\repos\\Piano-freeGlut-\\Piano (freeGlut)\\piano\\black notes\\100.ogg";
     themeSongstr = "sounds\\theme.ogg";
     const char* themeSong = themeSongstr.c_str();
-    ISoundEngine* SoundEngine = createIrrKlangDevice();
+   // ISoundEngine* SoundEngine = createIrrKlangDevice();
    // SoundEngine->play2D(themeSong, true);
     
     //const char* c= &music;
     //SoundEngine->play2D(s, false);
-  
+    platformList.push_back(plat1);
+    platformList.push_back(plat2);
+    platformList.push_back(plat3);
+    platformList.push_back(plat4);
+    platformList.push_back(plat5);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(800, 800);
@@ -602,6 +632,9 @@ int main(int argc, char** argv)
     loadTexture("marioLeft.jpg");
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->loadTexture();
+    }
+    for (int i = 0; i < platformList.size(); i++) {
+        platformList[i]->loadTexture();
     }
     glutDisplayFunc(display);
 
