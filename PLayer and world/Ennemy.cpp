@@ -3,7 +3,13 @@
 #include "stb_image.h"
 
 
-
+/// <summary>
+/// le constructeur de l'ennenmy qui prend en paramètres sa position, la position de la plateforme et ses dimensions 
+/// </summary>
+/// <param name="pos"></param>
+/// <param name="dim"></param>
+/// <param name="posP"></param>
+/// <param name="dimP"></param>
 Enemy::Enemy(vector<float> pos, vector<float> dim, vector<float> posP, vector<float> dimP) {
     position = pos;
     dimentions = dim;
@@ -16,8 +22,11 @@ Enemy::Enemy(vector<float> pos, vector<float> dim, vector<float> posP, vector<fl
 }
 
 
-
+/// <summary>
+/// drawEnemy() permet le dessin de l'ennemi avec une texture chargée 
+/// </summary>
 void Enemy :: drawEnemy() {
+   
     glColor3f(1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
 
@@ -35,6 +44,9 @@ void Enemy :: drawEnemy() {
         glEnd();
     
 }
+/// <summary>
+/// une structure permettant de spécifier la position des collisions avec l'ennemi
+/// </summary>
 enum CollisionSideEnemies {
     None,
     Top,
@@ -47,6 +59,15 @@ struct Collision1 {
     vector<float> dim;
 
 };
+
+/// <summary>
+/// une méthode permettant de verifier s'il y a une collision avec l'ennemi et Mario
+/// </summary>
+/// <param name="playerPos"></param>
+/// <param name="playerDim"></param>
+/// <param name="platformPos"></param>
+/// <param name="platformDim"></param>
+/// <returns></returns>
 
 CollisionSideEnemies checkEnemyCollision1(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
 
@@ -82,51 +103,10 @@ CollisionSideEnemies checkEnemyCollision1(vector<float> playerPos, vector<float>
     return None;
 }
 
-Collision1 checkCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
-    // Calculate the edges of the player square
-    Collision1 col;
-    col.dim = platformDim;
-    col.pos = platformPos;
-    float playerLeft = playerPos[0] - playerDim[0];
-    float playerRight = playerPos[0] + playerDim[0];
-    float playerTop = playerPos[1] + playerDim[1];
-    float playerBottom = playerPos[1] - playerDim[1];
 
-    // Calculate the edges of the platform rectangle
-    float platformLeft = platformPos[0] - platformDim[0];
-    float platformRight = platformPos[0] + platformDim[0];
-    float platformTop = platformPos[1] + platformDim[1];
-    float platformBottom = platformPos[1] - platformDim[1];
-
-    // Check for collision on the top side
-    if (playerBottom < platformTop && playerTop > platformTop &&
-        playerRight > platformLeft && playerLeft < platformRight) {
-        col.side = Top;
-        return col;
-    }
-
-
-    // Check for collision on the left side
-    if (playerRight > platformLeft && playerLeft < platformLeft &&
-        playerBottom < platformTop && playerTop > platformBottom) {
-        col.side = Left;
-        return col;
-
-    }
-
-    // Check for collision on the right side
-    if (playerLeft < platformRight && playerRight > platformRight &&
-        playerBottom < platformTop && playerTop > platformBottom) {
-        col.side = Right;
-        return col;
-    }
-
-    // If no collision is detected, return None
-    col.side = None;
-    return col;
-}
-
-//Movement in the plateform
+/// <summary>
+/// generer le mouvement de l'ennemi dans les plateformes
+/// </summary>
 void Enemy::Move() {
 
         CollisionSideEnemies side2 = checkEnemyCollision1(position, dimentions, platformPos, platformDim);
@@ -148,6 +128,10 @@ void Enemy::Move() {
 
 }
 
+
+/// <summary>
+/// generer la texture de l'ennemi
+/// </summary>
 void Enemy::loadTexture() {
    
         int width, height, numComponents;

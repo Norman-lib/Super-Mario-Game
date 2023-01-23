@@ -2,9 +2,23 @@
 
 #include "utils.h"
 #include "platform.h"
-
+/// <summary>
+/// cette classe permet de définir l'objet ennenmy qui représente un danger pour Mario
+/// </summary>
 class Enemy {
 private:
+	/// <summary>
+	/// cette classe contient 9 attributs
+	/// position : vecteur de position
+	/// dimentions : la taille de l'objet dessiné
+	/// speed : la vitesse de l'ennemi
+	/// deltaTime
+	/// moveForce : la force du mouvement 
+	/// texturePath : un pointeur vers le nom du fichier texture 
+	/// texture : un GLuint contenant les données de la texture
+	/// plateformPos : la position de la plateforme 
+	/// plateformDim : les dimensions de la plateforme
+	/// </summary>
 	vector<float> position;
 	vector <float> dimentions;
 	vector<float> speed;
@@ -14,7 +28,6 @@ private:
 	GLuint texture;
 	vector<float> platformPos;
 	vector <float> platformDim;
-
 
 public:
 	//Constructeurs
