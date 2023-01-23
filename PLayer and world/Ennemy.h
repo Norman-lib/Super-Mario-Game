@@ -17,6 +17,7 @@ private:
 
 
 public:
+	//Constructeurs
 	Enemy(vector<float> pos, vector<float> dim, vector<float> posP, vector<float> dimP);
 	//getters and setters
 	void setPosition(vector<float> f) { position = f; };
@@ -28,9 +29,7 @@ public:
 	void setTexture(GLuint tex) { texture = tex; };
 	GLuint getTexture() { return texture; };
 	const char* getTexturePath() { return texturePath; };
-
-
-	//functions
+	//methodes
 	void drawEnemy();
 	void Move();
 	void loadTexture();

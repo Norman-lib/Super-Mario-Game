@@ -15,6 +15,7 @@ using namespace irrklang;
 
 
 class Mario {
+	//attributs
     vector<float> Position = { -1,0 };
     vector<float> Dimension = { 0.5,0.5 };
 	int score=0;
@@ -48,24 +49,22 @@ public:
 	bool canJump = false;
 	
 	
-
+	//Constructeurs
 	Mario();
+	//getters et setters
 	int getScore() { return score; }
 	void setScore() { score += 1; }
 	vector<float> getPosition() { return Position; }
 	vector<float> getDimension(){ return Dimension; }
-	void UpdatePlayerPosition(vector<platform*>);
-	
-	void  setPosition(vector<float> pos) { Position = pos; }
-	void drawPlayerWithTexture(vector<float> pos, vector<float> dim);
-	void displayScore();
 	void setLastPosition(bool s) { isLastPositionLeft = s; };
 	bool getLastPosition() { return isLastPositionLeft; };
-
-
+	void  setPosition(vector<float> pos) { Position = pos; }
+	//methodes
+	void UpdatePlayerPosition(vector<platform*>);
+	void drawPlayerWithTexture(vector<float> pos, vector<float> dim);
+	void displayScore();
 	
-	
-
+	//fonctions propres à la collision
 	Struct::Collision checkCollision(vector<float> targetPos, vector<float> targetDims,vector<float> platformPos, vector<float> platformDim);
 	bool DetectCollisionWPlayer(vector<float> targetPos, vector<float> targetDims);
 

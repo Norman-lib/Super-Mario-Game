@@ -5,6 +5,7 @@
 using namespace std;
 
 class flag {
+	//attributs
 	vector<float> pos;
 	vector<float> dim;
 	GLuint texture;

@@ -74,10 +74,6 @@ CollisionSideEnemies checkEnemyCollision1(vector<float> playerPos, vector<float>
     // Check for collision on the right top side
     if (playerLeft < platformRight && playerRight > platformRight
         && abs(playerBottom - platformTop) < 0.1
-
-        //top
-       /* playerBottom < platformTop && playerTop > platformTop &&
-        playerRight > platformLeft && playerLeft < platformRight*/
         ) {
 
         return Right;
@@ -125,19 +121,13 @@ Collision1 checkCollision(vector<float> playerPos, vector<float> playerDim, vect
         return col;
     }
 
-
-
-
-
     // If no collision is detected, return None
     col.side = None;
     return col;
 }
 
+//Movement in the plateform
 void Enemy::Move() {
- 
-      
-
 
         CollisionSideEnemies side2 = checkEnemyCollision1(position, dimentions, platformPos, platformDim);
         

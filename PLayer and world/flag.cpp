@@ -16,9 +16,6 @@ vector<float> flag::getPos() {
 
 void flag::drawWithTexture() {
 
-    
-
-
     glColor3f(1.0f, 1.0f, 1.0f);
     // Enable texture coordinates
     glEnable(GL_TEXTURE_2D);

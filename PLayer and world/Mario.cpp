@@ -11,8 +11,6 @@ Mario::Mario()
 
 void Mario::UpdatePlayerPosition(vector<platform*> plats)//vector of platforms.....................
 {
-    
-    
 
     if (!gameOver) {
         // Apply gravity

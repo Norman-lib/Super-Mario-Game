@@ -6,6 +6,7 @@
 using namespace std;
 
 class platform {
+	//attributs
 	vector<float> pos;
 	vector<float> dim;
 	GLuint texture;
@@ -15,12 +16,12 @@ public:
 
 	//Constructer
 	platform(vector<float> pos, vector<float> dim);
-
+	//getters
+	vector<float> getPos();
+	vector<float> getDim();
 	//Methods
 	void draw();
 	void drawWithTexture(const char* filename);
-	vector<float> getPos();
-	vector<float> getDim();
 	void loadTexture();
 
 };
