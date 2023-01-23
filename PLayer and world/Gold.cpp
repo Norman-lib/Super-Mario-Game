@@ -3,7 +3,14 @@
 #include "stb_image.h"
 
 
-Gold::Gold() {}
+Gold::Gold() {
+    dim = { 0.5, 0.5 };
+}
+
+Gold::Gold(vector<float> pos) {
+    goldPos = pos;
+    dim = { 0.5, 0.5 };
+}
 
 
 void Gold::drawGold(vector<float> g) {

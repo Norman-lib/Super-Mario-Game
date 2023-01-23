@@ -28,6 +28,7 @@ public:
 	float deltaTime = 0.0f;
 	float currentTime = 0.0f;
 	float lastTime = 0.0f;
+	bool win;
 	bool left1;
 	bool right1;
 	bool isLastPositionLeft;

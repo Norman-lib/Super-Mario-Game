@@ -5,6 +5,7 @@
 
 
 Enemy::Enemy(vector<float> pos, vector<float> dim, vector<float> posP, vector<float> dimP) {
+
     position = pos;
     dimentions = dim;
     platformDim = dimP;

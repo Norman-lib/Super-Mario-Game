@@ -11,14 +11,17 @@ using namespace irrklang;
 
 
 class Gold {
+private:
+	vector<float> goldPos;
+	vector<float> dim ;
+	float radius = 0.5;
+	GLuint textureCoins;
 public: 
 	//Constructeur 
 	Gold();
+	Gold(vector<float> pos);
 	//attributs
-	vector<float> goldPos;
-	vector<float> dim = { {0.5f,0.5f} };
-	float radius = 0.5;
-	GLuint textureCoins;
+	
 	//getters
 	vector<float> getPosition() { return goldPos; }
 

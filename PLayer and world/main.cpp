@@ -10,17 +10,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Ennemy.h"
-
-
-
-
-vector<Gold*> Golds ; // � remplir avec le gold 
+ // � remplir avec le gold 
 
 
 using namespace std;
 
 
-
+bool playWinSound = false;
 //texture vars;
 unsigned char* marioLeftData;
 int marioWidth, marioHeight, marioNrChannels;
@@ -28,27 +24,47 @@ int marioWidth, marioHeight, marioNrChannels;
 Mario mario = Mario();
 
 
-    string coinSoundstr = "sounds\\coin.ogg";
+string coinSoundstr = "sounds\\coin.ogg";
 
 
 const char* coinSoundPath = coinSoundstr.c_str();
-//ISoundEngine* coinSound = createIrrKlangDevice();
+ISoundEngine* coinSound = createIrrKlangDevice();
+
+ISoundEngine* SoundEngine = createIrrKlangDevice();
+
+
+string winStr = "sounds\\win.ogg";
+const char* winSound = winStr.c_str();
+ISoundEngine* winSoundEngine = createIrrKlangDevice();
+
+string goombaStr = "sounds\\goomba.ogg";
+const char* goombaSound = goombaStr.c_str();
+ISoundEngine* goombaSoundEngine = createIrrKlangDevice();
 
 
 GLfloat playerX = 0.0f;
 vector<float> gravity = { 0, -0.5 };
 
 //platform
-vector<float> platformPos = { 0,-1 };
+vector<float> platformPos = { 0,-9 };
 vector<float> platformDim = { 10.0,0.5 };
-vector<float> platform2Pos = { 5,2.0 };
-vector<float> platform2Dim = { 5.0,0.5 };
-vector<float> platform3Pos = { 0.0,5.0 };
-vector<float> platform3Dim = { 3.0,0.5 };
-vector<float> platform4Pos = { -3.0,8.0 };
-vector<float> platform4Dim = { 7.0,0.5 };
-vector<float> platform5Pos = { 9.0,6.0 };
-vector<float> platform5Dim = { 3.0,0.5 };
+vector<float> platform2Pos = { 7.5,-6.0 };
+vector<float> platform2Dim = { 2.5, 0.5 };
+vector<float> platform3Pos = { 2.0,-4.0 };
+vector<float> platform3Dim = { 2.0,0.5 };
+vector<float> platform4Pos = { -6.0,-2.0 };
+vector<float> platform4Dim = { 4.0,0.5 };
+vector<float> platform5Pos = { 1.0,1.0 };
+vector<float> platform5Dim = { 9,0.5 };
+vector<float> platform6Pos = { 7.0,4.0 };
+vector<float> platform6Dim = { 3.0,0.5 };
+vector<float> platform7Pos = { -1.0,7.0 };
+vector<float> platform7Dim = { 9.0,0.5 };
+vector<float> platform8Pos = { -2.0,8.0 };
+vector<float> platform8Dim = { 8.0,0.5 };
+
+
+
 
 
 //flag
@@ -65,17 +81,59 @@ platform* plat2 = new platform(platform2Pos, platform2Dim);
 platform* plat3 = new platform(platform3Pos, platform3Dim);
 platform* plat4 = new platform(platform4Pos, platform4Dim);
 platform* plat5 = new platform(platform5Pos, platform5Dim);
+platform* plat6 = new platform(platform6Pos, platform6Dim);
+platform* plat7 = new platform(platform7Pos, platform7Dim);
+platform* plat8 = new platform(platform8Pos, platform8Dim); 
 
-Gold* gold1 = new Gold();
-Gold* gold2 = new Gold();
-Gold* gold3 = new Gold();
-Gold* gold4 = new Gold();
+float enemyWidth = 0.5f;
+
+Enemy* enemy = new Enemy({ 5, -8 }, { enemyWidth, enemyWidth }, plat1->getPos(), plat1->getDim());
+Enemy* enemy1 = new Enemy({ 6, -5 }, { enemyWidth, enemyWidth }, plat2->getPos(), plat2->getDim());
+Enemy* enemy2 = new Enemy({ -1, -3 }, { enemyWidth, enemyWidth }, plat3->getPos(), plat3->getDim());
+Enemy* enemy3= new Enemy({ -9, -1 }, { enemyWidth, enemyWidth }, plat4->getPos(), plat4->getDim());
+Enemy* enemy4 = new Enemy({ 1, 2 }, { enemyWidth, enemyWidth }, plat5->getPos(), plat5->getDim());
+Enemy* enemy5 = new Enemy({ -2, 9 }, { enemyWidth, enemyWidth }, plat8->getPos(), plat8->getDim());
+vector <Enemy*> enemies = { enemy, enemy1, enemy2, enemy3, enemy4, enemy5 };
+
+
+
+
+
+vector<platform*> platformList = {plat1, plat2, plat3, plat4, plat5, plat6, plat7, plat8};
+
+Gold* gold1 = new Gold({5.0, -8 });
+Gold* gold2 = new Gold({ 6.0, -8 });
+Gold* gold3 = new Gold({ 7.0, -8 });
+Gold* gold4 = new Gold({ 8, -8 });
+
+Gold* gold5 = new Gold({ 7.0, -5 });
+Gold* gold6 = new Gold({ 8.0, -5 });
+Gold* gold7 = new Gold({ 9.0, -5 });
+Gold* gold8 = new Gold({ 6, -5 });
+
+
+Gold* gold9 = new Gold({ -7, -1 });
+Gold* gold10 = new Gold({ -6, -1 });
+Gold* gold11 = new Gold({ -5, -1 });
+Gold* gold12 = new Gold({ -4, -1 });
+
+Gold* gold13 = new Gold({ 0, 2 });
+Gold* gold14 = new Gold({ 1, 2 });
+Gold* gold15 = new Gold({ 2, 2 });
+Gold* gold16 = new Gold({ 3, 2 });
+
+
+vector<Gold*> Golds = {gold1, gold2, gold3, gold4, gold5, gold6, gold7, gold8, gold9, gold10, gold11, gold12 , gold13, gold14, gold15, gold16 };
 
 flag* flag1 = new flag(flagPos, flagDim);
 
-vector<platform*> platformList;
 
 int score = 0;
+
+ISoundEngine* deathSoundEngine = createIrrKlangDevice();
+string deathSoundStr = "sounds\\death.ogg";
+const char* deathSound = deathSoundStr.c_str();
+bool playDethSong = false;
 
 
 float deltaTime = 0.0f;
@@ -84,16 +142,11 @@ float lastTime = 0.0f;
 float radius = 0.5;
 // vector<vector<float>> goldPos = { {-5,0},{2, 1} };
 
-float enemyWidth = 0.5f;
 float moveForce = 2.0f;
 vector<vector<float>> enemyPos = {   {3, 3} };
 vector<vector<float>> enemiesSpeed = {{moveForce, 0} };
 
 
-Enemy* enemy = new Enemy({ 5, 0 }, { enemyWidth, enemyWidth }, plat1->getPos(), plat1->getDim());
-Enemy* enemy1 = new Enemy({ 5, 3 }, { enemyWidth, enemyWidth }, plat2->getPos(), plat2->getDim());
-
-vector <Enemy*> enemies = { enemy, enemy1 };
 
 
 
@@ -161,14 +214,7 @@ void loadTextureRight(const char* filename) {
 
 
 
-void drawRectangle(vector<float> pos, vector<float> dim ) {
-    glBegin(GL_QUADS);
-    glVertex2f(pos[0] - dim[0], pos[1] - dim[1]);
-    glVertex2f(pos[0] - dim[0], pos[1] + dim[1]);
-    glVertex2f(pos[0] + dim[0], pos[1] + dim[1]);
-    glVertex2f(pos[0] + dim[0], pos[1] - dim[1]);
-    glEnd();
-}
+
 
 
 enum CollisionSide {
@@ -485,7 +531,7 @@ void detectGoldCols(vector<float> playerPos, vector<float> playerDim, int score,
 
             Golds.erase(find(Golds.begin(), Golds.end(), gold)); 
             score += 1; //SetScore() du player
-            //coinSound->play2D(coinSoundPath, false);
+            coinSound->play2D(coinSoundPath, false);
 
             cout << "your score : " << score << endl;
             return;
@@ -519,19 +565,21 @@ void display()
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-20.0, 20.0, -20.0, 20.0, -10.0, 10.0);
+    glOrtho(-10.0, 10.0, -10.0, 10.0, -10.0, 10.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Draw the world rectangle
-    glBegin(GL_LINE_LOOP);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex2f(-18.0f, 18.0f);
-    glVertex2f(18.0f, 18.0f);
-    glVertex2f(18.0f, -18.0f);
-    glVertex2f(-18.0f, -18.0f);
-    glEnd();
+    glColor3f(1.0, 0.843137, 0.0);
+    for (int i = 0; i < Golds.size(); i++) {
+        Golds[i]->drawGold(Golds[i]->getPosition());
+        if (mario.detectGoldCols(Golds[i]->getPosition(), radius)) {
+            Golds.erase(Golds.begin() + i);
+            coinSound->play2D(coinSoundPath, false);
+        }
+
+    }
+
     glColor3f(0.0, 1.0, 0.0);
     for (int i = 0; i < enemies.size(); i++) {
         enemies[i]->drawEnemy();
@@ -542,27 +590,30 @@ void display()
 
 
 
-    glColor3f(1.0, 0.843137, 0.0);
-    for (int i = 0; i < Golds.size(); i++) {
-        Golds[i]->drawGold(Golds[i]->getPosition());
-        if (mario.detectGoldCols(Golds[i]->getPosition(), radius)) {
-            Golds.erase(Golds.begin() + i);
-         }
-        
-    }
-
    
+
+    bool isOver = mario.gameOver;
     for (int i = 0; i < enemies.size(); i++) {
         colValue = mario.detectEnnemyCols(enemies[i]->getPosition(), enemies[i]->getDimentions());
+        
         if (colValue == 1) {
             enemies.erase(enemies.begin() + i);
+           
+            mario.setScore();
+            goombaSoundEngine->play2D(goombaSound, false);
             colValue = 0;
+            mario.velocity[1] = 0;
+            mario.jump = true;
         }
         else if (colValue == 2) {
-            cout << "Kill MARIO" << endl;
+
+            
         }
     }
-    
+    if (!isOver && mario.gameOver) {
+        SoundEngine->drop();
+        deathSoundEngine->play2D(deathSound, false);
+    }
     glColor3f(1.0f, 1.0f, 0.0f);
     //drawRectangle(platformPos, platformDim);
     //drawRectangle(platform2Pos, platform2Dim);
@@ -578,12 +629,14 @@ void display()
  
     flag1->drawWithTexture();
 
+    if (mario.DetectCollisionWPlayer(flag1->getPos(), flag1->getDim()) && !playWinSound) {
+        playWinSound = true;
+        SoundEngine->drop();
+        winSoundEngine->play2D(winSound, false);
+        mario.win = true;
 
-    glColor3f(1.0f, 0.0f, 0.0f);
-
-    for (int i = 0; i < enemyPos.size(); i++) {
-        drawRectangle(enemyPos[i], { enemyWidth, enemyWidth });
     }
+   
 
     glColor3f(1.0f, 1.0f, 1.0f);
     mario.displayScore();
@@ -591,6 +644,9 @@ void display()
 
     glutSwapBuffers();
 }
+ISoundEngine* jumpSoundEngine = createIrrKlangDevice();
+string themeSongstr = "sounds\\jump.ogg";
+const char* jumpSound = themeSongstr.c_str();
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -609,6 +665,10 @@ void keyboard(unsigned char key, int x, int y)
 
         break;
     case 'z':
+        if (!mario.jump) {
+            
+            jumpSoundEngine->play2D(jumpSound, false);
+        }
         mario.jump = true;
         break;
     }
@@ -626,7 +686,7 @@ void keyboardUp(unsigned char key, int x, int y) {
         
         break;
     case 'z':
-        
+        mario.jump = false;
         break;
     }
     glutPostRedisplay();
@@ -637,35 +697,24 @@ void keyboardUp(unsigned char key, int x, int y) {
 
 int main(int argc, char** argv)
 {
-    string themeSongstr = "C:\\Users\\Norma\\source\\repos\\Piano-freeGlut-\\Piano (freeGlut)\\piano\\black notes\\100.ogg";
-    themeSongstr = "sounds\\theme.ogg";
+   string  themeSongstr = "sounds\\theme.ogg";
     const char* themeSong = themeSongstr.c_str();
 
-   // SoundEngine->play2D(themeSong, true);
+    SoundEngine->play2D(themeSong, true);
     
-    //const char* c= &music;
-    //SoundEngine->play2D(s, false);
-    platformList.push_back(plat1);
-    platformList.push_back(plat2);
-    platformList.push_back(plat3);
-    platformList.push_back(plat4);
-    platformList.push_back(plat5);
-
-
-    gold1->setPosition({ -5,0 });
-    gold2->setPosition({ 2, 1 });
-    gold3->setPosition({ -7, 0 });
-    gold4->setPosition({ 4, 1 });
+   /* const char* c= &music;
+    SoundEngine->play2D(c, false);*/
    
 
-    Golds.push_back(gold1); 
-    Golds.push_back(gold2); 
-    Golds.push_back(gold3);
-    Golds.push_back(gold4);
+
+   
+   
+
+    
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(700, 700);
     glutCreateWindow("Player and World");
     glClearColor(0.49, 0.47, 0.87, 1.0f);
     glutKeyboardFunc(keyboard);

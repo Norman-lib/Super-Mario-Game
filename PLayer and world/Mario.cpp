@@ -6,8 +6,10 @@ Mario::Mario()
 {
     gameOver = false;
     isLastPositionLeft = false;
+    win = false;
     
 }
+
 
 void Mario::UpdatePlayerPosition(vector<platform*> plats)//vector of platforms.....................
 {
@@ -15,26 +17,35 @@ void Mario::UpdatePlayerPosition(vector<platform*> plats)//vector of platforms..
     
 
     if (!gameOver) {
+
         // Apply gravity
         velocity[1] += gravity[1];
-        // Apply jump force if jumping
-        if (jump && canJump) {
-            velocity[1] = jumpForce;
-            jump = false;
-            canJump = false;
-        }
-        if (right1 && left1) {
 
-        }
-        else if (right1) {
-            velocity[0] = moveForce;
-        }
-        else if (left1) {
-            velocity[0] = -moveForce;
+        // Apply jump force if jumping
+        if (!win) {
+            if (jump && canJump) {
+                velocity[1] = jumpForce;
+                jump = false;
+                canJump = false;
+
+            }
+            if (right1 && left1) {
+
+            }
+            else if (right1) {
+                velocity[0] = moveForce;
+            }
+            else if (left1) {
+                velocity[0] = -moveForce;
+            }
+            else {
+                velocity[0] = 0;
+            }
         }
         else {
             velocity[0] = 0;
         }
+       
         
         // Update player position based on velocity
         Position[0] += velocity[0] * deltaTime;
@@ -116,7 +127,7 @@ void  Mario::drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
 void Mario::displayScore()
 {
     std::string score_str = std::to_string(score);
-    glRasterPos2f(0, 18);
+    glRasterPos2f(0, 9);
     for (int i = 0; i < score_str.length(); i++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, score_str[i]);
     }
@@ -179,7 +190,7 @@ bool Mario::DetectCollisionWPlayer(vector<float> targetPos, vector<float> target
     return Position[1] - Dimension[1] < targetPos[1] + targetDims[1] &&
         Position[0] + Dimension[0] > targetPos[0] - targetDims[0] &&
         Position[0] - Dimension[0] < targetPos[0] + targetDims[0] &&
-        Position[0] + Dimension[0] > targetPos[0] - targetDims[0];
+        Position[1] + Dimension[1] > targetPos[1] - targetDims[1];
 }
 
 Struct::CollisionSide Mario::checkEnemyCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
