@@ -1,15 +1,20 @@
 #include"Mario.h"
 #include "stb_image.h"
 
-
+/// <summary>
+/// Contructeur de Mario (joueur) 
+/// </summary>
 Mario::Mario()
 {
     gameOver = false;
     isLastPositionLeft = false;
     
 }
-
-void Mario::UpdatePlayerPosition(vector<platform*> plats)//vector of platforms.....................
+/// <summary>
+/// Modifier la position du joueur 
+/// </summary>
+/// <param name="Platform">Vecteur de platformes du jeu</param>
+void Mario::UpdatePlayerPosition(vector<platform*> plats)
 {
 
     if (!gameOver) {
@@ -72,6 +77,12 @@ void Mario::UpdatePlayerPosition(vector<platform*> plats)//vector of platforms..
     
 }
 
+/// <summary>
+/// Afficher le joueur avec la texture elle prend en argument la position et les dimensions en 2D du joueur
+/// </summary>
+/// <params name="position">Positoin du joueur</params>
+/// <params name="position">Dimension du Joueur </params>
+
 void  Mario::drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
 
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -111,6 +122,9 @@ void  Mario::drawPlayerWithTexture(vector<float> pos, vector<float> dim) {
 
 }
 
+/// <summary>
+    /// Affichage du score
+    /// </summary>
 void Mario::displayScore()
 {
     std::string score_str = std::to_string(score);
@@ -119,7 +133,13 @@ void Mario::displayScore()
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, score_str[i]);
     }
 }
-
+/// <summary>
+/// Tester la collision entre deux objets du jeu  elle prent en argument la position et les dimensions en 2D de ces deux objets et retourne un booléan qui indique si ces deux objets sont en collision ou pas
+/// </summary>
+/// <param name="PlayerPos">Position du 1er object</param>
+/// <param name="PlayerDim">Dimension   du 1er object</param>
+/// <param name="platformPos">Position du 2ème objet</param>
+///<param name="platformDim">Dimension du 2ème  objet</param>
 Struct::Collision Mario::checkCollision(vector<float>PlayerPos, vector<float> PlayerDim, vector<float> platformPos, vector<float> platformDim)
 {
     // Calculate the edges of the player square
@@ -171,6 +191,12 @@ Struct::Collision Mario::checkCollision(vector<float>PlayerPos, vector<float> Pl
     return col;
 }
 
+/// <summary>
+/// Tester la collision entre le joueur et un objet prend en argumetns la position et les dimensions en 2D de cette   objet et retourne un booléan qui indique si ces deux entrent en collision ou pas
+/// </summary>
+/// <param name="targetPos">Position du l'objet</param>
+/// <param name="targetDims">Dimensionde l'objet</param>
+
 bool Mario::DetectCollisionWPlayer(vector<float> targetPos, vector<float> targetDims)
 {
     //chack these one ...............
@@ -179,6 +205,14 @@ bool Mario::DetectCollisionWPlayer(vector<float> targetPos, vector<float> target
         Position[0] - Dimension[0] < targetPos[0] + targetDims[0] &&
         Position[0] + Dimension[0] > targetPos[0] - targetDims[0];
 }
+
+/// <summary>
+/// Tester la collision entre l'enemy et la plateforme prend en argment  la position et les dimensions en 2D de cette   objet et la position et les dimentions de la plateforme et retourne un CollisionSide qiu indique le sens de collision
+/// </summary>
+/// <param name="playerPos">Position du l'enemy</param>
+/// <param name="playerDim">Dimensionde l'enemy</param>
+/// /// <param name="platformPos">Position de la plateforme</param>
+/// <param name="platformDim">Dimensionde la plateforme</param>
 
 Struct::CollisionSide Mario::checkEnemyCollision(vector<float> playerPos, vector<float> playerDim, vector<float> platformPos, vector<float> platformDim) {
 
@@ -217,7 +251,11 @@ Struct::CollisionSide Mario::checkEnemyCollision(vector<float> playerPos, vector
     // if nothing return None
     return Struct::None;
 }
-
+/// <summary>
+/// Tester la collision entre le joueur et un objet de type Gold prend en argumetns la position et les dimensions en 2D de cette   objet et retourne un booléan qui indique si ces deux entrent en collision ou pas
+/// </summary>
+/// <param name="goldPos">Position du l'objet gold</param>
+/// <param name="radius">Dimensionde l'objet gold</param>
 bool Mario::detectGoldCols(vector<float> goldPos,float radius) {
     
         Struct::Collision collision = checkCollision( Position,Dimension,goldPos, { radius, radius });
@@ -231,7 +269,11 @@ bool Mario::detectGoldCols(vector<float> goldPos,float radius) {
         return false;
     
 }
-
+/// <summary>
+/// Tester la collision entre le joueur etet un Ennemy prend en argumetns la position et les dimensions en 2D de l'enemy et retourne un booléan qui indique si ces deux entrent en collision ou pas
+/// </summary>
+/// <param name="EnnemyPos">Position de l'enemy</param>
+/// <param name="dim">Dimension de l'enemy</param>
 
 int Mario::detectEnnemyCols(vector<float> EnnemyPos, vector<float> dim) {
     
@@ -265,7 +307,11 @@ int Mario::detectEnnemyCols(vector<float> EnnemyPos, vector<float> dim) {
         }
     
 }
-
+/// <summary>
+/// Télecharger la strecture du joueur 
+/// </summary>
+/// <param name="a"></param>
+/// <param name="fileName">Le fichier qui contient la strecture</param>
 void Mario::loadTexture(int a, const char* fileName) {
     int width, height, numComponents;
     unsigned char* imageData = stbi_load(fileName, &width, &height, &numComponents, 0);

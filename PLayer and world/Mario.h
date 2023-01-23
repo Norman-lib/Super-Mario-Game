@@ -8,20 +8,32 @@
 #include <irrKlang.h>
 #include"Strecture.h"
 #include "platform.h"
-
+/// <summary>
+/// La class Mario : permet de créer et manipuler le joueur principal
+/// </summary>
 using namespace std;
 
 using namespace irrklang;
 
 
 class Mario {
-	//attributs
+    /// <summary>
+    /// Les attributs du joueur: Position (on 'est en 2D on a besoin de X et de Y du joueur ),les  dimensions (pour les collisions avec les autres objets et pour la texture)
+    /// </summary>
     vector<float> Position = { -1,0 };
     vector<float> Dimension = { 0.5,0.5 };
 	int score=0;
 	
 
 public:
+	/// <summary>
+	/// Attributs en public (ils serront utilisées et modifiés par les autres classes):
+	///		velocity : direction de déplacement  du joueur
+	///		gravity : vecteur simulant la gravity qui serra appliqué sur le joueur 
+	///		jumpForce : quantifié combien le joueur jump
+	///		moveForce : la vitesse de déplacement du joueur
+	/// 
+	/// </summary>
 	vector<float> velocity = { 0, 0 };
 	vector<float> gravity = { 0, -0.5 };
 	float jumpForce = 13.0f;
@@ -33,7 +45,9 @@ public:
 	bool right1;
 	bool isLastPositionLeft;
 	bool gameOver;
-	//texture vars;
+	/// <summary>
+	/// Attributs de tecture contient les dimensions de mario et les textures de gauche ,droite et de mort lorsque le joueuer marche à gauche ou à  droite ou s'il mort
+	/// </summary>
 	unsigned char* marioLeftData;
 	int marioWidth, marioHeight, marioNrChannels;
 	GLuint textureMarioLeft;
@@ -44,7 +58,6 @@ public:
 	GLfloat playerX = 0.0f;
 
 	
-	//variable
 	bool jump = false;
 	bool canJump = false;
 	
@@ -59,12 +72,13 @@ public:
 	void setLastPosition(bool s) { isLastPositionLeft = s; };
 	bool getLastPosition() { return isLastPositionLeft; };
 	void  setPosition(vector<float> pos) { Position = pos; }
-	//methodes
+	
 	void UpdatePlayerPosition(vector<platform*>);
+	
 	void drawPlayerWithTexture(vector<float> pos, vector<float> dim);
+	
 	void displayScore();
 	
-	//fonctions propres à la collision
 	Struct::Collision checkCollision(vector<float> targetPos, vector<float> targetDims,vector<float> platformPos, vector<float> platformDim);
 	bool DetectCollisionWPlayer(vector<float> targetPos, vector<float> targetDims);
 
